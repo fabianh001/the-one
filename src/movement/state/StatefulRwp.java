@@ -1,7 +1,11 @@
-package movement;
+package movement.state;
 
 import core.Coord;
 import core.Settings;
+import movement.MovementModel;
+import movement.Path;
+import movement.state.states.NodeState;
+import movement.state.states.QueueState;
 
 /**
  * Example of a state-machine driven node mobility. Each node has two states
@@ -19,7 +23,7 @@ extends MovementModel {
   //==========================================================================//
   private Coord lastWaypoint;
 
-  private State state;
+  private NodeState state;
   //==========================================================================//
 
 
@@ -55,12 +59,8 @@ extends MovementModel {
   }
 
   private Coord randomCoord() {
-    final double x;
-    if ( this.state == State.LEFT ) {
-      x = rng.nextDouble() * super.getMaxX() / 2;
-    } else {
-      x = ( rng.nextDouble() + 1 ) * super.getMaxX() / 2;
-    }
+    final double x = 0.43;
+    // TODO implement a polygon for each state
     return new Coord( x, rng.nextDouble() * super.getMaxY());
   }
   //==========================================================================//
@@ -71,7 +71,7 @@ extends MovementModel {
   //==========================================================================//
   public StatefulRwp( final Settings settings ) {
     super( settings );
-    this.state = this.getRandomState();
+    this.state = new QueueState();
   }
 
   public StatefulRwp( final StatefulRwp other ) {
@@ -79,21 +79,9 @@ extends MovementModel {
 
     // Pick a random state every time we replicate rather than copying!
     // Otherwise every node would start in the same state.
-    this.state = this.getRandomState();
+    this.state = new QueueState();
   }
   //==========================================================================//
-
-
-  //==========================================================================//
-  // State
-  //==========================================================================//
-  private State getRandomState() {
-    if ( rng.nextDouble() < 0.05 ) {
-      return State.LEFT;
-    } else {
-      return State.RIGHT;
-    }
-  }
 
   /**
    * This method defines the transitions in the state machine.
@@ -103,24 +91,8 @@ extends MovementModel {
    * @return
    *  the next state
    */
-  private State updateState( final State state ) {
-    switch ( state ) {
-      case LEFT: {
-        final double r = rng.nextDouble();
-        return ( r < 0.05 ) ? ( State.LEFT ) : ( State.RIGHT );
-      }
-      case RIGHT: {
-        final double r = rng.nextDouble();
-        return ( r < 0.05 ) ? ( State.LEFT ) : ( State.RIGHT );
-      }
-      default: {
-        throw new RuntimeException( "Invalid state." );
-      }
-    }
-  }
-
-  private static enum State {
-    LEFT, RIGHT
+  private NodeState updateState(NodeState state) {
+    return state.getNextState();
   }
   //==========================================================================//
 }
