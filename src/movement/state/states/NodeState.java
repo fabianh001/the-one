@@ -16,7 +16,9 @@ public abstract class NodeState {
             upper += intervals[i];
             if (isBetween(lower, upper)) {
                 try {
-                    return (NodeState) allStates[i].newInstance();
+                    NodeState ret = (NodeState) allStates[i].newInstance();
+                    System.out.println(ret.getStateName());
+                    return ret;
                 } catch (InstantiationException | IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -48,8 +50,8 @@ public abstract class NodeState {
         };
     }
     private boolean isBetween(int lower, int upper) {
-        double lowerDouble = lower / 100;
-        double upperDouble = upper / 100;
+        double lowerDouble = lower / 100.0;
+        double upperDouble = upper / 100.0;
         return lowerDouble <= random && random < upperDouble;
     }
 }

@@ -27,4 +27,9 @@ public class ExitState extends NodeState {
                 0
         };
     }
+
+    @Override
+    public NodeState getNextState() {
+        return null;
+    }
 }

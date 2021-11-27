@@ -3,7 +3,7 @@ package movement.state.states;
 public class OutdoorAreaState extends NodeState {
     @Override
     public String getStateName() {
-        return null;
+        return "Outdoor Area";
     }
 
     @Override
