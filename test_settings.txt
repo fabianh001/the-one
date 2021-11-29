@@ -1,0 +1,29 @@
+
+Scenario.name = MyScenario
+Scenario.endTime = 600
+Scenario.updateInterval = 0.1
+Scenario.simulateConnections = false
+Scenario.nrofHostGroups = 0
+MovementModel.worldSize = 210,200
+Report.nrofReports = 0
+Events.nrof = 0
+
+Scenario.nrofHostGroups = 1
+Group1.groupID = x
+Group1.nrofHosts = 1
+Group1.nrofInterfaces = 1
+Group1.interface1 = myInterface
+myInterface.type = SimpleBroadcastInterface
+myInterface.transmitRange = 0
+myInterface.transmitSpeed = 0
+Group1.movementModel = MapRouteMovement
+Group1.router = PassiveRouter
+Group1.routeFile = data/mi_magistrale_outline.wkt
+Group1.routeType = 1
+
+
+## Map based movement -movement model specific settings
+MapBasedMovement.nrofMapFiles = 1
+
+MapBasedMovement.mapFile1 = data/mi_magistrale_outline.wkt
+
