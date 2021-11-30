@@ -1,11 +1,27 @@
 package movement.state.states;
 
+import core.Coord;
+
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class NodeState {
     protected double random;
     private Class[] allStates = getAllStates();
 
     public abstract String getStateName();
     protected abstract Integer[] getIntervals();
+
+    // TODO should be abstract and implemented in all subclasses
+    public List<Coord> getPolygon() {
+        return Arrays.asList(
+            new Coord( 500, 250 ),
+            new Coord( 250, 500 ),
+            new Coord( 500, 750 ),
+            new Coord( 750, 500 ),
+            new Coord( 500, 250 )
+        );
+    }
 
     public NodeState getNextState() {
         random = Math.random();
