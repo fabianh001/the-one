@@ -19,7 +19,7 @@ Scenario.nrofHostGroups = 5
 
 # common settings for all groups
 Group.movementModel = ClusterMovement
-Group.router = DirectDeliveryRouter
+Group.router = CustomEpidemicRouter
 Group.bufferSize = 5M
 Group.waitTime = 0, 120
 #All nodes have the firstinterface inteface
@@ -54,7 +54,7 @@ Group5.routeFile = data/cluster/ferryroute.wkt
 Group5.routeType = 1
 Group5.waitTime = 10, 30
 Group5.speed = 3, 5
-Group5.nrofHosts = 5
+Group5.nrofHosts = 500
 Group5.nrofInterfaces = 1
 Group5.interface1 = firstinterface
 
@@ -68,7 +68,7 @@ MapBasedMovement.mapFile2 = data/cluster/origin.wkt
 # How many event generators
 Events.nrof = 1
 # Class of the first event generator
-Events1.class = MessageBroadcastGenerator
+Events1.class = SingleMessageGenerator
 # (following settings are specific for the MessageEventGenerator class)
 # Creation interval in seconds (one new message every 25 to 35 seconds)
 Events1.interval = 60,60
@@ -76,7 +76,7 @@ Events1.interval = 60,60
 Events1.size = 1000,1000
 # range of message source/destination addresses
 Events1.hosts = 1,5
-Events1.tohosts = 6,95
+Events1.tohosts = 0,0
 # Message ID prefix
 Events1.prefix = M
 

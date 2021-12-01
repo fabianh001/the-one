@@ -49,13 +49,15 @@ public class InfectionReport
 
     @Override
     public void messageTransferred(Message m, DTNHost from, DTNHost to, boolean firstDelivery) {
+        if(m.getFrom().getAddress() != from.getAddress()) return; //only count messages that are from the first sender
+        //if(m.getFrom().getAddress() == to.getAddress()) return;  // message travelled in a loop
         int toAddr = to.getAddress();
         boolean isFirstInfection = false;
         if(infectionTracker.containsKey(toAddr)){
             isFirstInfection = infectionTracker.get(toAddr).addParticles(m.getSize());
         }else{
-            // 15 * 1/(60 * 15)
-            InfectionData data = new InfectionData(random, 1.0/(15 * 4));
+            // 1/(30 * 15)
+            InfectionData data = new InfectionData(random, 1.0/(15 * 30));
             isFirstInfection = data.addParticles(m.getSize());
             infectionTracker.put(toAddr, data);
         }
