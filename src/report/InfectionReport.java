@@ -24,7 +24,7 @@ public class InfectionReport
     protected void init() {
         super.init();
         random = new Random();
-        infectionTracker = new HashMap<Integer, InfectionData>();
+        infectionTracker = new HashMap<>();
     }
 
     @Override
@@ -52,12 +52,16 @@ public class InfectionReport
         if(m.getFrom().getAddress() != from.getAddress()) return; //only count messages that are from the first sender
         //if(m.getFrom().getAddress() == to.getAddress()) return;  // message travelled in a loop
         int toAddr = to.getAddress();
-        boolean isFirstInfection = false;
+        boolean isFirstInfection;
         if(infectionTracker.containsKey(toAddr)){
             isFirstInfection = infectionTracker.get(toAddr).addParticles(m.getSize());
         }else{
-            // 1/(30 * 15)
-            InfectionData data = new InfectionData(random, 1.0/(15 * 30));
+            // 1/(30 * 4)
+            // One person distributes 1000 particles per second to another person
+            // mean time for infection: 5 minutes
+            // ==> 300,000 points
+            // test after one hour (1000 particles/second): highest value approx. 28,000 particles
+            InfectionData data = new InfectionData(random, 1.0/300);
             isFirstInfection = data.addParticles(m.getSize());
             infectionTracker.put(toAddr, data);
         }
@@ -83,8 +87,8 @@ public class InfectionReport
 
         private boolean isInfected;
         private int receivedParticles;
-        private double probInfection;
-        private Random r;
+        private final double probInfection;
+        private final Random r;
 
         public InfectionData(Random r, double probInfection){
             isInfected = false;
@@ -109,8 +113,6 @@ public class InfectionReport
                 if (r.nextDouble() < probInfection){
                     isInfected = true;
                     return true;
-                }else{
-                    continue;
                 }
             }
             return false;

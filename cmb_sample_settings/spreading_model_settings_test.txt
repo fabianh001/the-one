@@ -66,20 +66,32 @@ MapBasedMovement.mapFile2 = data/cluster/origin.wkt
 
 ## Message creation parameters
 # How many event generators
-Events.nrof = 1
+Events.nrof = 2
 # Class of the first event generator
 Events1.class = SingleMessageGenerator
 # (following settings are specific for the MessageEventGenerator class)
 # Creation interval in seconds (one new message every 25 to 35 seconds)
 Events1.interval = 60,60
 # Message sizes (50kB - 150kB)
-Events1.size = 1000,1000
+Events1.size = 100,100
 # range of message source/destination addresses
 Events1.hosts = 1,5
 Events1.tohosts = 0,0
 # Message ID prefix
 Events1.prefix = M
 
+# Class of the second event generator
+Events2.class = SingleMessageGenerator
+# (following settings are specific for the MessageEventGenerator class)
+# Creation interval in seconds (one new message every 25 to 35 seconds)
+Events2.interval = 3600,3600
+# Message sizes (50kB - 150kB)
+Events2.size = 100,100
+# range of message source/destination addresses
+Events2.hosts = 50,55
+Events2.tohosts = 0,0
+# Message ID prefix
+Events2.prefix = N
 
 ## Movement model settings
 # seed for movement models' pseudo random number generator (default = 0)
