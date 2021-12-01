@@ -49,7 +49,7 @@ public class InfectionReport
 
     @Override
     public void messageTransferred(Message m, DTNHost from, DTNHost to, boolean firstDelivery) {
-        int toAddr = from.getAddress();
+        int toAddr = to.getAddress();
         boolean isFirstInfection = false;
         if(infectionTracker.containsKey(toAddr)){
             isFirstInfection = infectionTracker.get(toAddr).addParticles(m.getSize());
@@ -60,7 +60,7 @@ public class InfectionReport
             infectionTracker.put(toAddr, data);
         }
         if(isFirstInfection){
-            write(getSimTime() + ", " + toAddr);
+            write(getSimTime() + ", " + from.getAddress() + " --> "+ toAddr);
         }
     }
 
@@ -71,7 +71,7 @@ public class InfectionReport
         //HashMap.SimpleEntry<Integer, InfectionData>
         for(Map.Entry<Integer, InfectionData> entry:infectionTracker.entrySet()){
             InfectionData data = entry.getValue();
-            write(entry.getKey()  + ",");
+            write(entry.getKey()  + "," + data.isInfected + "," + data.receivedParticles);
         }
 
         super.done();

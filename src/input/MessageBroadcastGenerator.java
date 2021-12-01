@@ -3,6 +3,9 @@ package input;
 import core.Settings;
 
 
+import java.util.Arrays;
+
+
 /**
  * Message creation -external events generator. Creates bursts of messages where
  * every source node (defined with {@link MessageEventGenerator#HOST_RANGE_S})

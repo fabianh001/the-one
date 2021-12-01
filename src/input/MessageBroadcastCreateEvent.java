@@ -38,13 +38,15 @@ public class MessageBroadcastCreateEvent extends ExternalEvent {
      */
     @Override
     public void processEvent(World world) {
-        for (int toAddr : receivers) {
-            DTNHost to = world.getNodeByAddress(toAddr);
+        for (int i = this.receivers[0]; i <= this.receivers[1]; i++) {
+            DTNHost to = world.getNodeByAddress(i);
             DTNHost from = world.getNodeByAddress(this.fromAddr);
-
-            Message m = new Message(from, to, this.id, this.size);
-            m.setResponseSize(this.responseSize);
-            from.createNewMessage(m);
+            // TODO Configure range for message creation
+            if(to.getLocation().distance(from.getLocation()) < 10){
+                Message m = new Message(from, to, this.id, this.size);
+                m.setResponseSize(this.responseSize);
+                from.createNewMessage(m);
+            }
         }
 
     }
