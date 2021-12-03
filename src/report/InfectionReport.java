@@ -61,7 +61,7 @@ public class InfectionReport
             // mean time for infection: 5 minutes
             // ==> 300,000 points
             // test after one hour (1000 particles/second): highest value approx. 28,000 particles
-            InfectionData data = new InfectionData(random, 1.0/300);
+            InfectionData data = new InfectionData(random, 1.0/60);
             isFirstInfection = data.addParticles(m.getSize());
             infectionTracker.put(toAddr, data);
         }

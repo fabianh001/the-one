@@ -5,7 +5,7 @@
 ## Scenario settings
 Scenario.name = cluster_spreading
 Scenario.simulateConnections = true
-Scenario.updateInterval = 0.1
+Scenario.updateInterval = 5
 # 43k ~= 12h
 Scenario.endTime = 4k
 
@@ -54,7 +54,7 @@ Group5.routeFile = data/cluster/ferryroute.wkt
 Group5.routeType = 1
 Group5.waitTime = 10, 30
 Group5.speed = 3, 5
-Group5.nrofHosts = 500
+Group5.nrofHosts = 2000
 Group5.nrofInterfaces = 1
 Group5.interface1 = firstinterface
 
@@ -73,7 +73,7 @@ Events1.class = SingleMessageGenerator
 # Creation interval in seconds (one new message every 25 to 35 seconds)
 Events1.interval = 60,60
 # Message sizes (50kB - 150kB)
-Events1.size = 100,100
+Events1.size = 5000,5000
 # range of message source/destination addresses
 Events1.hosts = 1,5
 Events1.tohosts = 0,0
@@ -86,7 +86,7 @@ Events2.class = SingleMessageGenerator
 # Creation interval in seconds (one new message every 25 to 35 seconds)
 Events2.interval = 3600,3600
 # Message sizes (50kB - 150kB)
-Events2.size = 100,100
+Events2.size = 5000,5000
 # range of message source/destination addresses
 Events2.hosts = 50,55
 Events2.tohosts = 0,0
