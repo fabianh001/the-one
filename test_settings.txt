@@ -1,25 +1,46 @@
 
-Scenario.name = MyScenario
-Scenario.endTime = 600
+# Settings for StatefulRwp where nodes have a state that influences mobility.
+
+Scenario.name = StatefulRwp
+# 20:30 - 05:00
+Scenario.endTime = 30600
 Scenario.updateInterval = 0.1
 Scenario.simulateConnections = false
-Scenario.nrofHostGroups = 0
-MovementModel.worldSize = 210,200
-Report.nrofReports = 0
+MovementModel.worldSize = 220,250
 Events.nrof = 0
 
-Scenario.nrofHostGroups = 1
-Group1.groupID = x
-Group1.nrofHosts = 1
-Group1.nrofInterfaces = 1
-Group1.interface1 = myInterface
+# Communication Interface
 myInterface.type = SimpleBroadcastInterface
 myInterface.transmitRange = 0
 myInterface.transmitSpeed = 0
-Group1.movementModel = MapRouteMovement
+
+# Groups
+Scenario.nrofHostGroups = 2
+
+Group1.groupID = 1
+Group1.nrofHosts = 40
+Group1.nrofInterfaces = 1
+Group1.interface1 = myInterface
+Group1.movementModel = StatefulRwp
 Group1.router = PassiveRouter
-Group1.routeFile = data/mi_magistrale_outline.wkt
-Group1.routeType = 1
+
+# Reports
+Report.nrofReports = 0
+
+Report.reportDir = reports
+
+
+Group2.groupID = 2
+Group2.nrofHosts = 1
+Group2.nrofInterfaces = 1
+Group2.interface1 = myInterface
+myInterface.type = SimpleBroadcastInterface
+myInterface.transmitRange = 0
+myInterface.transmitSpeed = 0
+Group2.movementModel = MapRouteMovement
+Group2.router = PassiveRouter
+Group2.routeFile = data/mi_magistrale_outline.wkt
+Group2.routeType = 1
 
 
 ## Map based movement -movement model specific settings
