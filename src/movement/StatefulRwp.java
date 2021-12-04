@@ -35,6 +35,10 @@ extends MovementModel {
   public Path getPath() {
     // Update state machine every time we pick a path
     this.state = this.updateState( this.state );
+    if (state == null) {
+      return null;
+      // TODO Remove from playfield
+    }
 
     // Create the path
     final Path p;
@@ -44,7 +48,7 @@ extends MovementModel {
     Coord c;
     do {
       c = this.randomCoord();
-    } while ( pathIntersects( this.state.getPolygon(), this.lastWaypoint, c ) );
+    } while ( !isInside( this.state.getPolygon(), c ) );
     p.addWaypoint( c );
 
     this.lastWaypoint = c;
