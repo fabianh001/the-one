@@ -72,6 +72,10 @@ public class PlayField extends JPanel {
 				if (focusOnClick) {
 					focusClosestNode(e.getX(), e.getY());
 				}
+
+				// print mouse position on playfield
+				Coord clickLoc = getWorldPosition(new Coord(e.getX(), e.getY()));
+				System.out.println(clickLoc.toString());
 			}
 		});
 	}

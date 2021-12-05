@@ -12,16 +12,8 @@ public abstract class NodeState {
     public abstract String getStateName();
     protected abstract Integer[] getIntervals();
 
-    // TODO should be abstract and implemented in all subclasses
-    public List<Coord> getPolygon() {
-        return Arrays.asList(
-            new Coord( 500, 250 ),
-            new Coord( 250, 500 ),
-            new Coord( 500, 750 ),
-            new Coord( 750, 500 ),
-            new Coord( 500, 250 )
-        );
-    }
+    // abstract and implemented in all subclasses
+    public abstract List<Coord> getPolygon();
 
     public NodeState getNextState() {
         random = Math.random();
