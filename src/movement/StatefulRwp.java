@@ -7,6 +7,7 @@ import core.SimScenario;
 import movement.state.states.*;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Example of a state-machine driven node mobility. Each node has two states
@@ -67,7 +68,7 @@ extends MovementModel {
     //Rwp in (or to the) polygon of the current state
     Coord c;
     do {
-      c = this.randomCoord();
+      c = this.randomCoord(this.state.getPolygon());
     } while ( !isInside( this.state.getPolygon(), c ) );
     p.addWaypoint( c );
 
@@ -83,7 +84,7 @@ extends MovementModel {
   @Override
   public Coord getInitialLocation() {
     do {
-      this.lastWaypoint = this.randomCoord();
+      this.lastWaypoint = this.randomCoord(this.state.getPolygon());
     } while (!isInside( this.state.getPolygon(), this.lastWaypoint ));
     return this.lastWaypoint;
   }
@@ -93,11 +94,57 @@ extends MovementModel {
     return new StatefulRwp( this );
   }
 
-  private Coord randomCoord() {
-    return new Coord(
-            rng.nextDouble() * super.getMaxX(),
-            rng.nextDouble() * super.getMaxY() );
+  private Coord randomCoord(List<Coord> polygon) {
+    Random r = new Random();
+    double minX = minXFromPolygon(polygon);
+    double minY = minYFromPolygon(polygon);
+    double maxX = maxXFromPolygon(polygon);
+    double maxY = maxYFromPolygon(polygon);
+    double xCord = minX + (maxX - minX) * r.nextDouble();
+    double yCord = minY + (maxY - minY) * r.nextDouble();
+    return new Coord(xCord, yCord);
   }
+
+  private Double minXFromPolygon(List<Coord> polygon) {
+    double minX = super.getMaxX();
+    for (Coord c : polygon) {
+      if (c.getX() < minX) {
+        minX = c.getX();
+      }
+    }
+    return minX;
+  }
+
+  private Double maxXFromPolygon(List<Coord> polygon) {
+    double maxX = 0;
+    for (Coord c : polygon) {
+      if (c.getX() > maxX) {
+        maxX = c.getX();
+      }
+    }
+    return maxX;
+  }
+
+  private Double maxYFromPolygon(List<Coord> polygon) {
+    double maxY = 0;
+    for (Coord c : polygon) {
+      if (c.getY() > maxY) {
+        maxY = c.getY();
+      }
+    }
+    return maxY;
+  }
+
+  private Double minYFromPolygon(List<Coord> polygon) {
+    double minY = super.getMaxY();
+    for (Coord c : polygon) {
+      if (c.getY() < minY) {
+        minY = c.getY();
+      }
+    }
+    return minY;
+  }
+
   //==========================================================================//
 
 
@@ -222,12 +269,12 @@ extends MovementModel {
     final double curTime = SimClock.getTime();
     final double random = Math.random();
 
-    if (curTime < startTimeOfCurrentState + state.minTimeInThisState()) {
-      return this.state;
-    }
-
     if (state == null) {
       return null;
+    }
+
+    if (curTime < startTimeOfCurrentState + state.minTimeInThisState()) {
+      return this.state;
     }
 
     //20:30 - 21:00
