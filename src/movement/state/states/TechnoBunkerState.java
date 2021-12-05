@@ -23,6 +23,11 @@ public class TechnoBunkerState extends NodeState {
     }
 
     @Override
+    public boolean shouldDoRwpInPolygon() {
+        return true;
+    }
+
+    @Override
     protected Integer[] getIntervals() {
         return new Integer[] {
                 0,

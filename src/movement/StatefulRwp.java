@@ -16,6 +16,7 @@ import java.util.List;
  *
  * @author teemuk
  */
+
 public class StatefulRwp
 extends MovementModel {
 
@@ -25,6 +26,10 @@ extends MovementModel {
   private Coord lastWaypoint;
 
   private NodeState state;
+
+  private boolean isActive = true;
+
+  private double startTimeOfCurrentState = 0;
   //==========================================================================//
 
 
@@ -33,18 +38,33 @@ extends MovementModel {
   //==========================================================================//
   @Override
   public Path getPath() {
+    // deactivate node if he is at ubahn
+    if (this.lastWaypoint.getX() == 450 && this.lastWaypoint.getY() == 0) {
+      isActive = false;
+    }
+
     // Update state machine every time we pick a path
     this.state = this.updateState( this.state );
-    if (state == null) {
-      return null;
-      // TODO Remove from playfield
-    }
 
     // Create the path
     final Path p;
     p = new Path( generateSpeed() );
     p.addWaypoint( lastWaypoint.clone() );
 
+    //Go to uBahn if state is null (happens after exitState)
+    if (state == null) {
+      Coord c = new Coord(450,0);
+      p.addWaypoint( c );
+      this.lastWaypoint = c;
+      return p;
+    }
+
+    // Stop doing Rwp if it shouldn't do it in this state and the node is already in the polygon
+    if (!this.state.shouldDoRwpInPolygon() && isInside(this.state.getPolygon(), this.lastWaypoint)) {
+      return null;
+    }
+
+    //Rwp in (or to the) polygon of the current state
     Coord c;
     do {
       c = this.randomCoord();
@@ -53,6 +73,11 @@ extends MovementModel {
 
     this.lastWaypoint = c;
     return p;
+  }
+
+  @Override
+  public boolean isActive() {
+    return this.isActive;
   }
 
   @Override
@@ -195,8 +220,11 @@ extends MovementModel {
    */
   private NodeState updateState(NodeState state) {
     final double curTime = SimClock.getTime();
-    final double endTime = SimScenario.getInstance().getEndTime();
     final double random = Math.random();
+
+    if (curTime < startTimeOfCurrentState + state.minTimeInThisState()) {
+      return this.state;
+    }
 
     if (state == null) {
       return null;
@@ -207,31 +235,29 @@ extends MovementModel {
       return state;
     }
 
+    startTimeOfCurrentState = curTime;
+
     //21:00 - 22:00 Beer Happy Hour
     if (curTime < 5400 && random < 0.15) {
       NodeState newState = new BeerBarState();
-      System.out.println(newState.getStateName());
       return newState;
     }
 
     //21:00 - 22:00 & 3:30 - 4:00 People get more snacks
     if ((curTime < 5400 || curTime > 25200) && random < 0.1) {
       NodeState newState = new PizzaBarState();
-      System.out.println(newState.getStateName());
       return newState;
     }
 
     //01:00 - 01:30 last regular u-bahn so more people are leaving
     if (curTime > 16200 && curTime < 18000 && random < 0.15) {
       NodeState newState = new WardrobeBeforeLeavingState();
-      System.out.println(newState.getStateName());
       return newState;
     }
 
     //4:15 party closes (at 4:30) so people leave with very high probability
     if (curTime > 27900 && random < 0.9) {
       NodeState newState = new WardrobeBeforeLeavingState();
-      System.out.println(newState.getStateName());
       return newState;
     }
 
