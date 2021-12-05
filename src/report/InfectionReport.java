@@ -73,8 +73,10 @@ public class InfectionReport
     @Override
     public void messageTransferred(Message m, DTNHost from, DTNHost to, boolean firstDelivery) {
         if(m.getFrom().getAddress() != from.getAddress()) return; //only count messages that are from the first sender
-        // infected group starts with group ID "I"
+        // infected group starts with group ID "I", infected groups can't get infected
         if(to.toString().startsWith("I")) return;
+        //if receiver is not active in the simulation
+        if(!to.isMovementActive()) return;
         //if(m.getFrom().getAddress() == to.getAddress()) return;  // message travelled in a loop
         int toAddr = to.getAddress();
         boolean isFirstInfection;
@@ -116,7 +118,7 @@ public class InfectionReport
                     break;
                 }
             }
-            write(getSimTime() + ", " + from.getAddress() + ","+ toAddr + ","  + labelLocation);
+            write(getSimTime() + ", " + from.getAddress() + ","+ toAddr + ","  + labelLocation + "," + to.isMovementActive());
         }
     }
 
