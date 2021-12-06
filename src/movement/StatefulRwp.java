@@ -3,11 +3,9 @@ package movement;
 import core.Coord;
 import core.Settings;
 import core.SimClock;
-import core.SimScenario;
 import movement.state.states.*;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Example of a state-machine driven node mobility. Each node has two states
@@ -34,6 +32,49 @@ extends MovementModel {
   //==========================================================================//
 
 
+  private void addDoorCoordinate(String oldState, Path p){
+
+    // handle edge case if no new state was selected
+    if(state == null) {
+      return;
+    }
+
+    // new goal state
+    final String newState = this.state.getStateName();
+
+    // outdoor states
+    final HashSet<String> outdoorStates =  new HashSet<String>(Arrays.asList("Shisha Bar", "Pizza Bar", "Outdoor Area"));
+    // indoor states
+    final HashSet<String> indoorStates = new HashSet<>(Arrays.asList(
+            "Main Stage", "Shot Bar", "Cocktail Bar", "Beer Bar", "Side WC", "Main WC", "Techno Bunker",
+            "Wardrobe", "Wardrobe before leaving", "Entry", "Exit"
+    ));
+
+    // coordinate position of outdoor door
+    final Coord doorOutdoor = new Coord(112.72,105.35);
+
+    // door between metal bunker and indoor states
+    final Coord metalBunkerDoor = new Coord(126.00,99.93);
+
+    // add door coordinate if nodes go from indoor to outdoor state
+    if(outdoorStates.contains(newState) && indoorStates.contains(oldState)){
+      p.addWaypoint(doorOutdoor);
+    }
+    // add door coordinate if nodes go from outdoor to indoor state
+    if(outdoorStates.contains(oldState) && indoorStates.contains(newState)){
+      p.addWaypoint(doorOutdoor);
+    }
+
+    // add door if leaving from metal bunker to indoor state or vice versa
+    if(oldState.equals("Metal Bunker") && indoorStates.contains(newState)){
+      p.addWaypoint(metalBunkerDoor);
+    }
+    if(indoorStates.contains(oldState) && newState.equals("Metal Bunker")){
+      p.addWaypoint(metalBunkerDoor);
+    }
+  }
+
+
   //==========================================================================//
   // Implementation
   //==========================================================================//
@@ -44,6 +85,15 @@ extends MovementModel {
       isActive = false;
     }
 
+    // save current state as String
+    final String oldState;
+    if (state != null) {
+       oldState = this.state.getStateName();
+    } else {
+      oldState = "no old state was found";
+    }
+
+
     // Update state machine every time we pick a path
     this.state = this.updateState( this.state );
 
@@ -51,6 +101,10 @@ extends MovementModel {
     final Path p;
     p = new Path( generateSpeed() );
     p.addWaypoint( lastWaypoint.clone() );
+
+
+    // Add waypoints for doors if switching between indoor and outdoor state or metal bunker
+    addDoorCoordinate(oldState, p);
 
     //Go to uBahn if state is null (happens after exitState)
     if (state == null) {
