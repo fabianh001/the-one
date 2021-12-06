@@ -26,8 +26,8 @@ public class QueueState extends NodeState {
     @Override
     protected Integer[] getIntervals() {
         return new Integer[] {
-                0,
-                100,
+                50,
+                50,
                 0,
                 0,
                 0,

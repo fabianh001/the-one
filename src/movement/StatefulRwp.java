@@ -7,6 +7,7 @@ import core.SimScenario;
 import movement.state.states.*;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Example of a state-machine driven node mobility. Each node has two states
@@ -16,6 +17,7 @@ import java.util.List;
  *
  * @author teemuk
  */
+
 public class StatefulRwp
 extends MovementModel {
 
@@ -25,6 +27,10 @@ extends MovementModel {
   private Coord lastWaypoint;
 
   private NodeState state;
+
+  private boolean isActive = true;
+
+  private double startTimeOfCurrentState = 0;
   //==========================================================================//
 
 
@@ -33,21 +39,36 @@ extends MovementModel {
   //==========================================================================//
   @Override
   public Path getPath() {
+    // deactivate node if he is at ubahn
+    if (this.lastWaypoint.getX() == 450 && this.lastWaypoint.getY() == 0) {
+      isActive = false;
+    }
+
     // Update state machine every time we pick a path
     this.state = this.updateState( this.state );
-    if (state == null) {
-      return null;
-      // TODO Remove from playfield
-    }
 
     // Create the path
     final Path p;
     p = new Path( generateSpeed() );
     p.addWaypoint( lastWaypoint.clone() );
 
+    //Go to uBahn if state is null (happens after exitState)
+    if (state == null) {
+      Coord c = new Coord(450,0);
+      p.addWaypoint( c );
+      this.lastWaypoint = c;
+      return p;
+    }
+
+    // Stop doing Rwp if it shouldn't do it in this state and the node is already in the polygon
+    if (!this.state.shouldDoRwpInPolygon() && isInside(this.state.getPolygon(), this.lastWaypoint)) {
+      return null;
+    }
+
+    //Rwp in (or to the) polygon of the current state
     Coord c;
     do {
-      c = this.randomCoord();
+      c = this.randomCoord(this.state.getPolygon());
     } while ( !isInside( this.state.getPolygon(), c ) );
     p.addWaypoint( c );
 
@@ -56,9 +77,14 @@ extends MovementModel {
   }
 
   @Override
+  public boolean isActive() {
+    return this.isActive;
+  }
+
+  @Override
   public Coord getInitialLocation() {
     do {
-      this.lastWaypoint = this.randomCoord();
+      this.lastWaypoint = this.randomCoord(this.state.getPolygon());
     } while (!isInside( this.state.getPolygon(), this.lastWaypoint ));
     return this.lastWaypoint;
   }
@@ -68,11 +94,57 @@ extends MovementModel {
     return new StatefulRwp( this );
   }
 
-  private Coord randomCoord() {
-    return new Coord(
-            rng.nextDouble() * super.getMaxX(),
-            rng.nextDouble() * super.getMaxY() );
+  private Coord randomCoord(List<Coord> polygon) {
+    Random r = new Random();
+    double minX = minXFromPolygon(polygon);
+    double minY = minYFromPolygon(polygon);
+    double maxX = maxXFromPolygon(polygon);
+    double maxY = maxYFromPolygon(polygon);
+    double xCord = minX + (maxX - minX) * r.nextDouble();
+    double yCord = minY + (maxY - minY) * r.nextDouble();
+    return new Coord(xCord, yCord);
   }
+
+  private Double minXFromPolygon(List<Coord> polygon) {
+    double minX = super.getMaxX();
+    for (Coord c : polygon) {
+      if (c.getX() < minX) {
+        minX = c.getX();
+      }
+    }
+    return minX;
+  }
+
+  private Double maxXFromPolygon(List<Coord> polygon) {
+    double maxX = 0;
+    for (Coord c : polygon) {
+      if (c.getX() > maxX) {
+        maxX = c.getX();
+      }
+    }
+    return maxX;
+  }
+
+  private Double maxYFromPolygon(List<Coord> polygon) {
+    double maxY = 0;
+    for (Coord c : polygon) {
+      if (c.getY() > maxY) {
+        maxY = c.getY();
+      }
+    }
+    return maxY;
+  }
+
+  private Double minYFromPolygon(List<Coord> polygon) {
+    double minY = super.getMaxY();
+    for (Coord c : polygon) {
+      if (c.getY() < minY) {
+        minY = c.getY();
+      }
+    }
+    return minY;
+  }
+
   //==========================================================================//
 
 
@@ -195,11 +267,14 @@ extends MovementModel {
    */
   private NodeState updateState(NodeState state) {
     final double curTime = SimClock.getTime();
-    final double endTime = SimScenario.getInstance().getEndTime();
     final double random = Math.random();
 
     if (state == null) {
       return null;
+    }
+
+    if (curTime < startTimeOfCurrentState + state.minTimeInThisState()) {
+      return this.state;
     }
 
     //20:30 - 21:00
@@ -207,31 +282,29 @@ extends MovementModel {
       return state;
     }
 
+    startTimeOfCurrentState = curTime;
+
     //21:00 - 22:00 Beer Happy Hour
     if (curTime < 5400 && random < 0.15) {
       NodeState newState = new BeerBarState();
-      System.out.println(newState.getStateName());
       return newState;
     }
 
     //21:00 - 22:00 & 3:30 - 4:00 People get more snacks
     if ((curTime < 5400 || curTime > 25200) && random < 0.1) {
       NodeState newState = new PizzaBarState();
-      System.out.println(newState.getStateName());
       return newState;
     }
 
     //01:00 - 01:30 last regular u-bahn so more people are leaving
     if (curTime > 16200 && curTime < 18000 && random < 0.15) {
       NodeState newState = new WardrobeBeforeLeavingState();
-      System.out.println(newState.getStateName());
       return newState;
     }
 
     //4:15 party closes (at 4:30) so people leave with very high probability
     if (curTime > 27900 && random < 0.9) {
       NodeState newState = new WardrobeBeforeLeavingState();
-      System.out.println(newState.getStateName());
       return newState;
     }
 

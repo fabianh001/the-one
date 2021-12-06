@@ -12,6 +12,14 @@ public abstract class NodeState {
     public abstract String getStateName();
     protected abstract Integer[] getIntervals();
 
+    public boolean shouldDoRwpInPolygon() {
+        return false;
+    }
+
+    public double minTimeInThisState() {
+        return 300;
+    }
+
     // abstract and implemented in all subclasses
     public abstract List<Coord> getPolygon();
 
@@ -25,7 +33,6 @@ public abstract class NodeState {
             if (isBetween(lower, upper)) {
                 try {
                     NodeState ret = (NodeState) allStates[i].newInstance();
-                    System.out.println(ret.getStateName());
                     return ret;
                 } catch (InstantiationException | IllegalAccessException e) {
                     e.printStackTrace();
