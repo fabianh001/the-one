@@ -1,13 +1,5 @@
 package interfaces;
 
-import core.CBRConnection;
-import core.Connection;
-import core.NetworkInterface;
-import core.Settings;
-
-import java.util.Collection;
-
-
 /*
  * Copyright 2010 Aalto University, ComNet
  * Released under GPLv3. See LICENSE.txt for details.

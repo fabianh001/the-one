@@ -37,6 +37,28 @@ public class InfectionReport
             new WardrobeBeforeLeavingState()
     };
 
+    private static final NodeState[] statesOutside = new NodeState[]{
+            new QueueState(),
+            new EntryState(),
+            new OutdoorAreaState(),
+            new PizzaBarState(),
+            new ExitState(),
+    };
+
+    private static final MainStageState stateMainStage = new MainStageState();
+    private static final ShishaBarState stateShishaBar = new ShishaBarState();
+    private static final NodeState[] statesIndoor = new NodeState[] {
+            new WardrobeState(),
+            new MetalBunkerState(),
+            new TechnoBunkerState(),
+            new SideWCState(),
+            new MainWCState(),
+            new WardrobeBeforeLeavingState(),
+            new CocktailBarState(),
+            new BeerBarState(),
+            new ShotBarState(),
+    };
+
     public InfectionReport(){
         init();
     }
@@ -46,7 +68,7 @@ public class InfectionReport
         super.init();
         random = new Random();
         infectionTracker = new HashMap<>();
-        factorDistances = new double[] {1.0, 1.0, 0.5, 0.05, 0.001};
+        factorDistances = new double[] {1.0, 1.0, 1.0, 0.2, 0.001};
         distances = new double[]{0.0, 0.5, 1.0, 1.5, 3.0};
     }
 
@@ -75,10 +97,14 @@ public class InfectionReport
         if(m.getFrom().getAddress() != from.getAddress()) return; //only count messages that are from the first sender
         // infected group starts with group ID "I", infected groups can't get infected
         if(to.toString().startsWith("I")) return;
-        //if receiver is not active in the simulation
+        // if receiver is not active in the simulation
         if(!to.isMovementActive()) return;
         //if(m.getFrom().getAddress() == to.getAddress()) return;  // message travelled in a loop
+        // people in the queue can't get infected
+        if(isInside(new QueueState().getPolygon(), to.getLocation())) return;
         int toAddr = to.getAddress();
+
+
         boolean isFirstInfection;
         // find correct factor
         double curDist = from.getLocation().distance(to.getLocation());
@@ -87,6 +113,7 @@ public class InfectionReport
             // distance greater than maximum transmission range
             return;
         }
+        // Apply distance modifier
         for(int i = 1; i < factorDistances.length; i++){
             if(curDist <= distances[i]){
                 // interpolate distance factor linearly
@@ -95,19 +122,60 @@ public class InfectionReport
                 break;
             }
         }
+        // Apply sender side modifier
+        // apply factor depending on sender vaccination status and location
+        double factorSenderLocation = 1.0;
+        if(isInside(stateMainStage.getPolygon(), from.getLocation())){
+            factorSenderLocation = 5.0; // check main stage
+        }else if(isInside(stateShishaBar.getPolygon(), from.getLocation())){
+            factorSenderLocation = 10.0; // check shisha bar
+        }else {
+            for(NodeState node : statesOutside){
+                if(isInside(node.getPolygon(), from.getLocation())){
+                    factorSenderLocation = 0.5;
+                    break;
+                }
+            }
+        }
+
+        double factorSender = 1.0;
+        if(from.toString().charAt(1) == 'V'){
+            factorSender = 0.8;
+        }else if(from.toString().charAt(1) == 'B'){
+            factorSender = 0.7;
+        }
+
+        // Apply receiver vaccination modifier
+        double factorReceiver = 1.0;
+        if(to.toString().charAt(1) == 'V'){
+            factorReceiver = 0.9;
+        }else if(to.toString().charAt(1) == 'B'){
+            factorReceiver = 0.8;
+        }
+
+        int particles = (int) (factorSenderLocation * factorSender * factorReceiver * factorDist * m.getSize());
+        // if(particles > 5000) System.out.println(particles);
+
+
+
         //write(factorDist + "," + curDist);
 
         if(infectionTracker.containsKey(toAddr)){
-            isFirstInfection = infectionTracker.get(toAddr).addParticles((int)(factorDist * m.getSize()));
+            isFirstInfection = infectionTracker.get(toAddr).addParticles(particles);
         }else{
 
-            // 1/(30 * 4)
-            // One person distributes 1000 particles per second to another person
-            // mean time for infection: 5 minutes
-            // ==> 300,000 points
-            // test after one hour (1000 particles/second): highest value approx. 28,000 particles
-            InfectionData data = new InfectionData(random, 1.0/600.0);
-            isFirstInfection = data.addParticles((int)(factorDist * m.getSize()));
+            /*
+            One person sends 1000 particles per second to another person (scenario, default range with factor 1.0 and unvaccinated)
+            Source:
+            Lelieveld, J.; Helleis, F.; Borrmann, S.; Cheng, Y.; Drewnick, F.; Haug, G.; Klimach, T.; Sciare, J.; Su, H.; Pöschl, U.
+            Model Calculations of Aerosol Transmission and Infection Risk of COVID-19 in Indoor Environments. Int. J. Environ. Res. Public Health 2020, 17, 8114. https://doi.org/10.3390/ijerph17218114
+
+            3.7. Infective Dose D50: Probability for infection for one copy is about 0.0022.
+            Fitting to this simulation: After receiving 1000 particles, we simulate one infection event with probability prob (initial test: 0.0022) for an infection.
+             */
+            final double prob = 0.005; // use more infectious variant, more dangerous setting: party, old value: 0.0022;
+            InfectionData data = new InfectionData(random, prob);
+            isFirstInfection = data.addParticles(particles);
             infectionTracker.put(toAddr, data);
         }
         if(isFirstInfection){
