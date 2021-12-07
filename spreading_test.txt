@@ -91,13 +91,14 @@ MovementModel.worldSize = 4500, 3400
 MovementModel.warmup = 1000
 
 # how many reports to load
-Report.nrofReports = 1
+Report.nrofReports = 2
 # length of the warm up period (simulated seconds)
 Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
 Report.reportDir = reports/
 # Report classes to load
 Report.report1 = InfectionReport
+Report.report2 = UnityMovementReport
 
 ## Optimization settings -- these affect the speed of the simulation
 ## see World class for details.
