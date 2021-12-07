@@ -4,16 +4,23 @@ import core.*;
 import movement.StatefulRwp;
 import movement.state.states.*;
 
-import javax.xml.soap.Node;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+class NodeInformation {
+    HashMap<String, Double> locations = new HashMap<>();
+    double lastTimeStep = 0;
+    String currentNodeState = new QueueState().getStateName();
+
+    NodeInformation(double lastTimeStep) {
+        this.lastTimeStep = lastTimeStep;
+    }
+}
+
 public class UnityMovementReport extends Report implements MovementListener {
 
-    private double lastTimeStep = 0;
-    private String currentNodeState = "Other";
-    private HashMap<Integer, HashMap<String, Double>> nodeMap = new HashMap<>();
+    private HashMap<Integer, NodeInformation> nodeMap = new HashMap<>();
     private static final NodeState[] states = new NodeState[]{
             new QueueState(),
             new EntryState(),
@@ -35,46 +42,35 @@ public class UnityMovementReport extends Report implements MovementListener {
 
     @Override
     public void newDestination(DTNHost host, Coord destination, double speed) {
-        HashMap<String, Double> locationHashMap = nodeMap.get(host.getAddress());
+        NodeInformation currentNodeInfo = nodeMap.get(host.getAddress());
+        HashMap<String, Double> locationHashMap = currentNodeInfo.locations;
 
         Double currentTime = getSimTime();
-        Double time = currentTime - lastTimeStep;
-        Double count = locationHashMap.get(currentNodeState);
+        Double time = currentTime - currentNodeInfo.lastTimeStep;
+        Double count = locationHashMap.get(currentNodeInfo.currentNodeState);
         if (count == null) {
-            locationHashMap.put(currentNodeState, time);
+            locationHashMap.put(currentNodeInfo.currentNodeState, time);
         } else {
-            locationHashMap.put(currentNodeState, count + time);
+            locationHashMap.put(currentNodeInfo.currentNodeState, count + time);
         }
-
-//        String labelLocation = "Other";
-//        for (NodeState state : states) {
-//            if (isInside(state.getPolygon(), destination)) {
-//                labelLocation = state.getStateName();
-//                break;
-//            }
-//        }
 
         try {
             StatefulRwp movModel = (StatefulRwp) host.movement;
             String labelLocation = movModel.lastState.getStateName();
-            lastTimeStep = currentTime;
-            currentNodeState = labelLocation;
+            currentNodeInfo.lastTimeStep = currentTime;
+            currentNodeInfo.currentNodeState = labelLocation;
             return;
         } catch (Exception e) {
             // Do nothing
         }
 
-        lastTimeStep = currentTime;
-        currentNodeState = "Other";
+        currentNodeInfo.lastTimeStep = currentTime;
+        currentNodeInfo.currentNodeState = "Other";
     }
 
     @Override
     public void initialLocation(DTNHost host, Coord location) {
-        currentNodeState = new EntryState().getStateName();
-        lastTimeStep = getSimTime();
-        HashMap<String, Double> locationHashMap = new HashMap<>();
-        locationHashMap.put(new EntryState().getStateName(), 0.0);
-        nodeMap.put(host.getAddress(), locationHashMap);
+        nodeMap.put(host.getAddress(), new NodeInformation(getSimTime()));
     }
 
     @Override
@@ -82,12 +78,16 @@ public class UnityMovementReport extends Report implements MovementListener {
         //write summary
         write("---- DONE ----");
         //HashMap.SimpleEntry<Integer, InfectionData>
-        for(Map.Entry<Integer, HashMap<String, Double>> entry : nodeMap.entrySet()){
+        for(Map.Entry<Integer, NodeInformation> entry : nodeMap.entrySet()){
             String locations = "";
             int total = 0;
-            for(Map.Entry<String, Double> counts : entry.getValue().entrySet()) {
-                locations += counts.getKey() + ": " + counts.getValue() + "   |   ";
-                total += counts.getValue();
+            for(NodeState state : states) {
+                Double value = entry.getValue().locations.get(state.getStateName());
+                if (value == null) {
+                    value = 0.0;
+                }
+                total += value;
+                locations += state.getStateName() + ": " + value + "   |   ";
             }
             locations += "Total Time: " + total;
             write("Node " + entry.getKey()  + ": " + locations);

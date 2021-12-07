@@ -25,7 +25,7 @@ public class StatefulRwp
     private Coord lastWaypoint;
 
     private NodeState currentState;
-    public NodeState lastState = null;
+    public NodeState lastState = new QueueState();
 
     private boolean isActive = true;
 
