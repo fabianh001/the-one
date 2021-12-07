@@ -24,7 +24,8 @@ public class StatefulRwp
     //==========================================================================//
     private Coord lastWaypoint;
 
-    private NodeState state;
+    private NodeState currentState;
+    public NodeState lastState = null;
 
     private boolean isActive = true;
 
@@ -35,12 +36,12 @@ public class StatefulRwp
     private void addDoorCoordinate(String oldState, Path p) {
 
         // handle edge case if no new state was selected
-        if (state == null) {
+        if (currentState == null) {
             return;
         }
 
         // new goal state
-        final String newState = this.state.getStateName();
+        final String newState = this.currentState.getStateName();
 
         // outdoor states
         final HashSet<String> outdoorStates = new HashSet<String>(Arrays.asList("Shisha Bar", "Pizza Bar", "Outdoor Area"));
@@ -87,15 +88,16 @@ public class StatefulRwp
 
         // save current state as String
         final String oldState;
-        if (state != null) {
-            oldState = this.state.getStateName();
+        if (currentState != null) {
+            oldState = this.currentState.getStateName();
         } else {
             oldState = "no old state was found";
         }
 
 
         // Update state machine every time we pick a path
-        this.state = this.updateState(this.state);
+        this.lastState = this.currentState;
+        this.currentState = this.updateState(this.currentState);
 
         // Create the path
         final Path p;
@@ -107,7 +109,7 @@ public class StatefulRwp
         addDoorCoordinate(oldState, p);
 
         //Go to uBahn if state is null (happens after exitState)
-        if (state == null) {
+        if (currentState == null) {
             Coord c = new Coord(450, 0);
             p.addWaypoint(c);
             this.lastWaypoint = c;
@@ -115,15 +117,15 @@ public class StatefulRwp
         }
 
         // Stop doing Rwp if it shouldn't do it in this state and the node is already in the polygon
-        if (!this.state.shouldDoRwpInPolygon() && isInside(this.state.getPolygon(), this.lastWaypoint)) {
+        if (!this.currentState.shouldDoRwpInPolygon() && isInside(this.currentState.getPolygon(), this.lastWaypoint)) {
             return null;
         }
 
         //Rwp in (or to the) polygon of the current state
         Coord c;
         do {
-            c = this.randomCoord(this.state.getPolygon());
-        } while (!isInside(this.state.getPolygon(), c));
+            c = this.randomCoord(this.currentState.getPolygon());
+        } while (!isInside(this.currentState.getPolygon(), c));
         p.addWaypoint(c);
 
         this.lastWaypoint = c;
@@ -138,8 +140,8 @@ public class StatefulRwp
     @Override
     public Coord getInitialLocation() {
         do {
-            this.lastWaypoint = this.randomCoord(this.state.getPolygon());
-        } while (!isInside(this.state.getPolygon(), this.lastWaypoint));
+            this.lastWaypoint = this.randomCoord(this.currentState.getPolygon());
+        } while (!isInside(this.currentState.getPolygon(), this.lastWaypoint));
         return this.lastWaypoint;
     }
 
@@ -207,7 +209,7 @@ public class StatefulRwp
     //==========================================================================//
     public StatefulRwp(final Settings settings) {
         super(settings);
-        this.state = new QueueState();
+        this.currentState = new QueueState();
     }
 
     public StatefulRwp(final StatefulRwp other) {
@@ -215,7 +217,7 @@ public class StatefulRwp
 
         // Pick a random state every time we replicate rather than copying!
         // Otherwise every node would start in the same state.
-        this.state = new QueueState();
+        this.currentState = new QueueState();
     }
     //==========================================================================//
 
@@ -326,7 +328,7 @@ public class StatefulRwp
         }
 
         if (curTime < startTimeOfCurrentState + state.minTimeInThisState()) {
-            return this.state;
+            return this.currentState;
         }
 
         //20:30 - 21:00
