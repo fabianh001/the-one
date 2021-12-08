@@ -37,6 +37,7 @@ public class InfectionReport
     private static final int INDEX_BOOSTER = 2;
     // constants
     private double prob;
+    private static final boolean showDebugOutput = false;
 
     private static final NodeState[] states = new NodeState[]{
             new QueueState(),
@@ -92,40 +93,40 @@ public class InfectionReport
         double[] distancesDefault = new double[]{0.0, 0.5, 1.0, 1.5, 3.0};
         if(getSettings().contains(FACTOR_DISTANCE_S)) {
             factorDistances = getSettings().getCsvDoubles(FACTOR_DISTANCE_S);
-            System.out.println("Applied config settings for factorDistances");
+            if(showDebugOutput) System.out.println("Applied config settings for factorDistances");
         }else{
             factorDistances = factorDistancesDefault;
         }
         if(getSettings().contains(DISTANCES_S)){
             distances = getSettings().getCsvDoubles(DISTANCES_S);
-            System.out.println("Applied config settings for distances");
+            if(showDebugOutput) System.out.println("Applied config settings for distances");
         }else{
             distances = distancesDefault;
         }
         if(getSettings().contains(INFECTION_PROB_S) && getSettings().getDouble(INFECTION_PROB_S) >= 0 && getSettings().getDouble(INFECTION_PROB_S) <= 1){
             prob = getSettings().getDouble(INFECTION_PROB_S);
-            System.out.println("Applied config settings for infection rate");
+            if (showDebugOutput) System.out.println("Applied config settings for infection rate");
         }else{
             prob = 0.005;
         }
         // factor location: Indoor, main stage, shisha bar, outside
         if(getSettings().contains(FACTOR_LOCATION_S)){
             factorLocation = getSettings().getCsvDoubles(FACTOR_LOCATION_S, 4);
-            System.out.println("Applied config settings for factor location");
+            if(showDebugOutput) System.out.println("Applied config settings for factor location");
         }else{
             factorLocation = new double[]{1.0, 5.0, 10.0, 0.5};
         }
         // factor sender: unvaccinated, vaccinated, booster
         if(getSettings().contains(FACTOR_SENDER_S)){
             factorSender = getSettings().getCsvDoubles(FACTOR_SENDER_S, 3);
-            System.out.println("Applied config settings for factor sender");
+            if(showDebugOutput) System.out.println("Applied config settings for factor sender");
         }else{
             factorSender = new double[]{1.0, 0.8, 0.7};
         }
         // factor receiver: unvaccinated, vaccinated, booster
         if(getSettings().contains(FACTOR_RECEIVER_S)){
             factorReceiver = getSettings().getCsvDoubles(FACTOR_RECEIVER_S, 3);
-            System.out.println("Applied config settings for factor receiver");
+            if(showDebugOutput) System.out.println("Applied config settings for factor receiver");
         }else{
             factorReceiver = new double[]{1.0, 0.9, 0.8};
         }
