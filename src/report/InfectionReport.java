@@ -18,6 +18,26 @@ public class InfectionReport
     private Random random;
     private double[] factorDistances;
     private double[] distances;
+    public double[] factorLocation, factorSender, factorReceiver;
+    // constants
+
+    public static final String FACTOR_DISTANCE_S = "factor_distance";
+    public static final String DISTANCES_S = "distances";
+    public static final String INFECTION_PROB_S = "infection_rate";
+    public static final String FACTOR_LOCATION_S = "factor_location";
+    public static final String FACTOR_SENDER_S = "factor_sender";
+    public static final String FACTOR_RECEIVER_S = "factor_receiver";
+
+    private static final int INDEX_INDOOR = 0;
+    private static final int INDEX_MAIN_STAGE = 1;
+    private static final int INDEX_SHISHA_BAR = 2;
+    private static final int INDEX_OUTDOOR = 3;
+    private static final int INDEX_UNVACCINATED = 0;
+    private static final int INDEX_VACCINATED = 1;
+    private static final int INDEX_BOOSTER = 2;
+    // constants
+    private double prob;
+
     private static final NodeState[] states = new NodeState[]{
             new QueueState(),
             new EntryState(),
@@ -68,8 +88,48 @@ public class InfectionReport
         super.init();
         random = new Random();
         infectionTracker = new HashMap<>();
-        factorDistances = new double[] {1.0, 1.0, 1.0, 0.2, 0.001};
-        distances = new double[]{0.0, 0.5, 1.0, 1.5, 3.0};
+        double[] factorDistancesDefault = new double[] {1.0, 1.0, 1.0, 0.2, 0.001};
+        double[] distancesDefault = new double[]{0.0, 0.5, 1.0, 1.5, 3.0};
+        if(getSettings().contains(FACTOR_DISTANCE_S)) {
+            factorDistances = getSettings().getCsvDoubles(FACTOR_DISTANCE_S);
+            System.out.println("Applied config settings for factorDistances");
+        }else{
+            factorDistances = factorDistancesDefault;
+        }
+        if(getSettings().contains(DISTANCES_S)){
+            distances = getSettings().getCsvDoubles(DISTANCES_S);
+            System.out.println("Applied config settings for distances");
+        }else{
+            distances = distancesDefault;
+        }
+        if(getSettings().contains(INFECTION_PROB_S) && getSettings().getDouble(INFECTION_PROB_S) >= 0 && getSettings().getDouble(INFECTION_PROB_S) <= 1){
+            prob = getSettings().getDouble(INFECTION_PROB_S);
+            System.out.println("Applied config settings for infection rate");
+        }else{
+            prob = 0.005;
+        }
+        // factor location: Indoor, main stage, shisha bar, outside
+        if(getSettings().contains(FACTOR_LOCATION_S)){
+            factorLocation = getSettings().getCsvDoubles(FACTOR_LOCATION_S, 4);
+            System.out.println("Applied config settings for factor location");
+        }else{
+            factorLocation = new double[]{1.0, 5.0, 10.0, 0.5};
+        }
+        // factor sender: unvaccinated, vaccinated, booster
+        if(getSettings().contains(FACTOR_SENDER_S)){
+            factorSender = getSettings().getCsvDoubles(FACTOR_SENDER_S, 3);
+            System.out.println("Applied config settings for factor sender");
+        }else{
+            factorSender = new double[]{1.0, 0.8, 0.7};
+        }
+        // factor receiver: unvaccinated, vaccinated, booster
+        if(getSettings().contains(FACTOR_RECEIVER_S)){
+            factorReceiver = getSettings().getCsvDoubles(FACTOR_RECEIVER_S, 3);
+            System.out.println("Applied config settings for factor receiver");
+        }else{
+            factorReceiver = new double[]{1.0, 0.9, 0.8};
+        }
+
     }
 
     @Override
@@ -124,36 +184,35 @@ public class InfectionReport
         }
         // Apply sender side modifier
         // apply factor depending on sender vaccination status and location
-        double factorSenderLocation = 1.0;
+        double factorSenderLocation = factorLocation[INDEX_INDOOR];
         if(isInside(stateMainStage.getPolygon(), from.getLocation())){
-            factorSenderLocation = 5.0; // check main stage
+            factorSenderLocation = factorLocation[INDEX_MAIN_STAGE]; // check main stage
         }else if(isInside(stateShishaBar.getPolygon(), from.getLocation())){
-            factorSenderLocation = 10.0; // check shisha bar
+            factorSenderLocation = factorLocation[INDEX_SHISHA_BAR]; // check shisha bar
         }else {
             for(NodeState node : statesOutside){
                 if(isInside(node.getPolygon(), from.getLocation())){
-                    factorSenderLocation = 0.5;
+                    factorSenderLocation = factorLocation[INDEX_OUTDOOR];
                     break;
                 }
             }
         }
-
-        double factorSender = 1.0;
+        double facSender = factorSender[INDEX_UNVACCINATED]; // unvaccinated
         if(from.toString().charAt(1) == 'V'){
-            factorSender = 0.8;
+            facSender = factorSender[INDEX_VACCINATED];
         }else if(from.toString().charAt(1) == 'B'){
-            factorSender = 0.7;
+            facSender = factorSender[INDEX_BOOSTER];
         }
 
         // Apply receiver vaccination modifier
-        double factorReceiver = 1.0;
+        double facReceiver = factorReceiver[INDEX_UNVACCINATED];
         if(to.toString().charAt(1) == 'V'){
-            factorReceiver = 0.9;
+            facReceiver = factorReceiver[INDEX_VACCINATED];
         }else if(to.toString().charAt(1) == 'B'){
-            factorReceiver = 0.8;
+            facReceiver = factorReceiver[INDEX_BOOSTER];
         }
 
-        int particles = (int) (factorSenderLocation * factorSender * factorReceiver * factorDist * m.getSize());
+        int particles = (int) (factorSenderLocation * facSender * facReceiver * factorDist * m.getSize());
         // if(particles > 5000) System.out.println(particles);
 
 
@@ -173,7 +232,7 @@ public class InfectionReport
             3.7. Infective Dose D50: Probability for infection for one copy is about 0.0022.
             Fitting to this simulation: After receiving 1000 particles, we simulate one infection event with probability prob (initial test: 0.0022) for an infection.
              */
-            final double prob = 0.005; // use more infectious variant, more dangerous setting: party, old value: 0.0022;
+             // use more infectious variant, more dangerous setting: party, old value: 0.0022;
             InfectionData data = new InfectionData(random, prob);
             isFirstInfection = data.addParticles(particles);
             infectionTracker.put(toAddr, data);

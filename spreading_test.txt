@@ -113,6 +113,16 @@ Report.warmup = 0
 Report.reportDir = reports/
 # Report classes to load
 Report.report1 = InfectionReport
+# Configuration of parameters for the infection report
+# for each (distance, factor) pair, one entry in factor_distance, distances, in ascending order
+Report.factor_distance = 1.0, 1.0, 1.0, 0.2, 0.001
+Report.distances = 0.0, 0.5, 1.0, 1.5, 3.0
+Report.infection_rate = 0.01
+# four different factors: indoor, main stage, shisha bar and outside
+Report.factor_location = 1.0, 5.0, 10.0, 0.5
+# three values each for sender and receiver: unvaccinated, vaccinated, booster
+Report.factor_sender = 1.0, 0.9, 0.8
+Report.factor_receiver = 1.0, 0.8, 0.7
 
 Report.report2 = HostLocationReport
 
