@@ -55,7 +55,7 @@ public class StatefulRwp
         // door between metal bunker and indoor states
         final Coord metalBunkerDoor = new Coord(126.00, 99.93);
         //
-        final Coord entryCoorindate = new Coord(210,107);
+        final Coord entryCoorindate = new Coord(210, 107);
 
         // add door coordinate if nodes go from indoor to outdoor state
         if (outdoorStates.contains(newState) && indoorStates.contains(oldState)) {
@@ -114,7 +114,7 @@ public class StatefulRwp
 
         //Go to uBahn if state is null (happens after exitState)
         if (state == null) {
-            Coord c1 = new Coord(210,107);
+            Coord c1 = new Coord(210, 107);
             Coord c2 = new Coord(450, 0);
             p.addWaypoint(c1);
             p.addWaypoint(c2);
@@ -344,6 +344,7 @@ public class StatefulRwp
 
         startTimeOfCurrentState = curTime;
 
+        // needed for first state
         if (state instanceof QueueState) {
             return state.getNextState();
         }
