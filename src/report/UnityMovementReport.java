@@ -79,7 +79,7 @@ public class UnityMovementReport extends Report implements MovementListener {
         write("---- DONE ----");
         //HashMap.SimpleEntry<Integer, InfectionData>
         for(Map.Entry<Integer, NodeInformation> entry : nodeMap.entrySet()){
-            String locations = "";
+            StringBuilder locations = new StringBuilder();
             int total = 0;
             for(NodeState state : states) {
                 Double value = entry.getValue().locations.get(state.getStateName());
@@ -87,10 +87,10 @@ public class UnityMovementReport extends Report implements MovementListener {
                     value = 0.0;
                 }
                 total += value;
-                locations += state.getStateName() + ": " + value + ",\t";
+                locations.append(String.format("%1$25s%2$-15s", state.getStateName() + ":", value + ","));
             }
-            locations += "Total Time: " + total;
-            write("Node " + entry.getKey()  + ": " + locations);
+            locations.append(String.format("%1$10s%2$-10d", "Total Time: ", total));
+            write(String.format("%1$-10s%2$-5s","Node " + entry.getKey()  + ":", locations.toString()));
         }
 
         super.done();
