@@ -87,7 +87,7 @@ public class UnityMovementReport extends Report implements MovementListener {
                     value = 0.0;
                 }
                 total += value;
-                locations += state.getStateName() + ": " + value + ",";
+                locations += state.getStateName() + ": " + value + ",\t";
             }
             locations += "Total Time: " + total;
             write("Node " + entry.getKey()  + ": " + locations);
