@@ -78,10 +78,10 @@ public class UnityMovementReport extends Report implements MovementListener {
         //write summary
         write("---- DONE ----");
         //HashMap.SimpleEntry<Integer, InfectionData>
-        for(Map.Entry<Integer, NodeInformation> entry : nodeMap.entrySet()){
+        for (Map.Entry<Integer, NodeInformation> entry : nodeMap.entrySet()) {
             StringBuilder locations = new StringBuilder();
             int total = 0;
-            for(NodeState state : states) {
+            for (NodeState state : states) {
                 Double value = entry.getValue().locations.get(state.getStateName());
                 if (value == null) {
                     value = 0.0;
@@ -90,7 +90,7 @@ public class UnityMovementReport extends Report implements MovementListener {
                 locations.append(String.format("%1$25s%2$-15s", state.getStateName() + ":", value + ","));
             }
             locations.append(String.format("%1$10s%2$-10d", "Total Time: ", total));
-            write(String.format("%1$-10s%2$-5s","Node " + entry.getKey()  + ":", locations.toString()));
+            write(String.format("%1$-10s%2$-5s", "Node " + entry.getKey() + ":", locations.toString()));
         }
 
         super.done();
@@ -100,26 +100,26 @@ public class UnityMovementReport extends Report implements MovementListener {
 
     private static boolean isInside(
             final List<Coord> polygon,
-            final Coord point ) {
-        final int count = countIntersectedEdges( polygon, point,
-                new Coord( -10,0 ) );
-        return ( ( count % 2 ) != 0 );
+            final Coord point) {
+        final int count = countIntersectedEdges(polygon, point,
+                new Coord(-10, 0));
+        return ((count % 2) != 0);
     }
 
     private static int countIntersectedEdges(
             final List<Coord> polygon,
             final Coord start,
-            final Coord end ) {
+            final Coord end) {
         int count = 0;
-        for ( int i = 0; i < polygon.size() - 1; i++ ) {
-            final Coord polyP1 = polygon.get( i );
-            final Coord polyP2 = polygon.get( i + 1 );
+        for (int i = 0; i < polygon.size() - 1; i++) {
+            final Coord polyP1 = polygon.get(i);
+            final Coord polyP2 = polygon.get(i + 1);
 
-            final Coord intersection = intersection( start, end, polyP1, polyP2 );
-            if ( intersection == null ) continue;
+            final Coord intersection = intersection(start, end, polyP1, polyP2);
+            if (intersection == null) continue;
 
-            if ( isOnSegment( polyP1, polyP2, intersection )
-                    && isOnSegment( start, end, intersection ) ) {
+            if (isOnSegment(polyP1, polyP2, intersection)
+                    && isOnSegment(start, end, intersection)) {
                 count++;
             }
         }
@@ -129,20 +129,20 @@ public class UnityMovementReport extends Report implements MovementListener {
     private static boolean isOnSegment(
             final Coord L0,
             final Coord L1,
-            final Coord point ) {
+            final Coord point) {
         final double crossProduct
-                = ( point.getY() - L0.getY() ) * ( L1.getX() - L0.getX() )
-                - ( point.getX() - L0.getX() ) * ( L1.getY() - L0.getY() );
-        if ( Math.abs( crossProduct ) > 0.0000001 ) return false;
+                = (point.getY() - L0.getY()) * (L1.getX() - L0.getX())
+                - (point.getX() - L0.getX()) * (L1.getY() - L0.getY());
+        if (Math.abs(crossProduct) > 0.0000001) return false;
 
         final double dotProduct
-                = ( point.getX() - L0.getX() ) * ( L1.getX() - L0.getX() )
-                + ( point.getY() - L0.getY() ) * ( L1.getY() - L0.getY() );
-        if ( dotProduct < 0 ) return false;
+                = (point.getX() - L0.getX()) * (L1.getX() - L0.getX())
+                + (point.getY() - L0.getY()) * (L1.getY() - L0.getY());
+        if (dotProduct < 0) return false;
 
         final double squaredLength
-                = ( L1.getX() - L0.getX() ) * ( L1.getX() - L0.getX() )
-                + (L1.getY() - L0.getY() ) * (L1.getY() - L0.getY() );
+                = (L1.getX() - L0.getX()) * (L1.getX() - L0.getX())
+                + (L1.getY() - L0.getY()) * (L1.getY() - L0.getY());
         return !(dotProduct > squaredLength);
     }
 
@@ -150,25 +150,25 @@ public class UnityMovementReport extends Report implements MovementListener {
             final Coord L0_p0,
             final Coord L0_p1,
             final Coord L1_p0,
-            final Coord L1_p1 ) {
-        final double[] p0 = getParams( L0_p0, L0_p1 );
-        final double[] p1 = getParams( L1_p0, L1_p1 );
-        final double D = p0[ 1 ] * p1[ 0 ] - p0[ 0 ] * p1[ 1 ];
-        if ( D == 0.0 ) return null;
+            final Coord L1_p1) {
+        final double[] p0 = getParams(L0_p0, L0_p1);
+        final double[] p1 = getParams(L1_p0, L1_p1);
+        final double D = p0[1] * p1[0] - p0[0] * p1[1];
+        if (D == 0.0) return null;
 
-        final double x = ( p0[ 2 ] * p1[ 1 ] - p0[ 1 ] * p1[ 2 ] ) / D;
-        final double y = ( p0[ 2 ] * p1[ 0 ] - p0[ 0 ] * p1[ 2 ] ) / D;
+        final double x = (p0[2] * p1[1] - p0[1] * p1[2]) / D;
+        final double y = (p0[2] * p1[0] - p0[0] * p1[2]) / D;
 
-        return new Coord( x, y );
+        return new Coord(x, y);
     }
 
     private static double[] getParams(
             final Coord c0,
-            final Coord c1 ) {
+            final Coord c1) {
         final double A = c0.getY() - c1.getY();
         final double B = c0.getX() - c1.getX();
         final double C = c0.getX() * c1.getY() - c0.getY() * c1.getX();
-        return new double[] { A, B, C };
+        return new double[]{A, B, C};
     }
 
 
