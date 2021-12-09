@@ -29,6 +29,11 @@ public class MainStageState extends NodeState {
     }
 
     @Override
+    public double minTimeInThisState() {
+        return 1200;
+    }
+
+    @Override
     protected Integer[] getIntervals() {
         return new Integer[] {
                 0,

@@ -344,6 +344,10 @@ public class StatefulRwp
 
         startTimeOfCurrentState = curTime;
 
+        if (state instanceof QueueState) {
+            return state.getNextState();
+        }
+
         //21:00 - 22:00 Beer Happy Hour
         if (curTime < 5400 && random < 0.15) {
             NodeState newState = new BeerBarState();

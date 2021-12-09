@@ -23,6 +23,11 @@ public class ShishaBarState extends NodeState {
     }
 
     @Override
+    public double minTimeInThisState() {
+        return 900;
+    }
+
+    @Override
     protected Integer[] getIntervals() {
         return new Integer[] {
                 0,
