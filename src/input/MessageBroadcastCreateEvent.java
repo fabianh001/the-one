@@ -41,7 +41,6 @@ public class MessageBroadcastCreateEvent extends ExternalEvent {
         for (int i = this.receivers[0]; i <= this.receivers[1]; i++) {
             DTNHost to = world.getNodeByAddress(i);
             DTNHost from = world.getNodeByAddress(this.fromAddr);
-            // TODO Configure range for message creation
             if(to.getLocation().distance(from.getLocation()) < 10){
                 Message m = new Message(from, to, this.id, this.size);
                 m.setResponseSize(this.responseSize);

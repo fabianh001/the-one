@@ -10,9 +10,9 @@ Scenario.updateInterval = 5
 Scenario.endTime = 30600
 MovementModel.worldSize = 220,250
 
-firstinterface.type = SimpleBroadcastInterface
-# transmit speed of 2 Mbps = 250kBps
-firstinterface.transmitSpeed = 250k
+firstinterface.type = InfectionSimpleBroadcastInterface
+# transmit speed of 2 Mbps = 500kBps
+firstinterface.transmitSpeed = 500k
 firstinterface.transmitRange = 3
 
 
@@ -43,20 +43,35 @@ Group1.router = PassiveRouter
 Group1.routeFile = data/mi_magistrale_outline.wkt
 Group1.routeType = 1
 
-Group2.groupID = I2
+
+# first character defines host as I(nfected) or N(on-Infected)
+# second character denotes host as U(nvaccinated), V(accinated) or B(ooster)
+Group2.groupID = IU2
 Group2.nrofHosts = 5
 Group2.nrofInterfaces = 1
 Group2.interface1 = firstinterface
 Group2.movementModel = StatefulRwp
 
-Group3.groupID = 3
-Group3.nrofHosts = 95
+Group3.groupID = IV3
+Group3.nrofHosts = 0
 Group3.nrofInterfaces = 1
 Group3.interface1 = firstinterface
 Group3.movementModel = StatefulRwp
 
+Group4.groupID = IB4
+Group4.nrofHosts = 0
+Group4.nrofInterfaces = 1
+Group4.interface1 = firstinterface
+Group4.movementModel = StatefulRwp
+
+Group5.groupID = NU5
+Group5.nrofHosts = 95
+Group5.nrofInterfaces = 1
+Group5.interface1 = firstinterface
+Group5.movementModel = StatefulRwp
+
 # Groups
-Scenario.nrofHostGroups = 3
+Scenario.nrofHostGroups = 5
 
 
 
@@ -68,14 +83,14 @@ Scenario.nrofHostGroups = 3
 # How many event generators
 Events.nrof = 1
 # Class of the first event generator
-Events1.class = SingleMessageGenerator
+Events1.class = MessageBurstGenerator
 # (following settings are specific for the MessageEventGenerator class)
 # Creation interval in seconds (one new message every 25 to 35 seconds)
 Events1.interval = 60,60
 # Message sizes (50kB - 150kB)
 Events1.size = 5000,5000
 # range of message source/destination addresses
-Events1.hosts = 1,9
+Events1.hosts = 1,5
 Events1.tohosts = 0,0
 # Message ID prefix
 Events1.prefix = M
@@ -98,6 +113,18 @@ Report.warmup = 0
 Report.reportDir = reports/
 # Report classes to load
 Report.report1 = InfectionReport
+# Configuration of parameters for the infection report
+# for each (distance, factor) pair, one entry in factor_distance, distances, in ascending order
+Report.factor_distance = 1.0, 1.0, 1.0, 0.2, 0.001
+Report.distances = 0.0, 0.5, 1.0, 1.5, 3.0
+# infection rate between 0.0001 and 0.001 seems to produce believable results
+Report.infection_rate = 0.0025
+# four different factors: indoor, high risk party areas (indoor, main stage, metal bunker, techno bunker), shisha bar and outside
+Report.factor_location = 1.0, 5.0, 10.0, 0.5
+# three values each for sender and receiver: unvaccinated, vaccinated, booster
+Report.factor_sender = 1.0, 0.9, 0.8
+Report.factor_receiver = 1.0, 0.8, 0.7
+
 Report.report2 = UnityMovementReport
 
 ## Optimization settings -- these affect the speed of the simulation
