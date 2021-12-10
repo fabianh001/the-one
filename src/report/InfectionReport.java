@@ -9,7 +9,48 @@ import movement.state.states.*;
 import java.util.*;
 
 
-
+/**
+ *  This class handles the simulation of the disease spread. Only the direct transmission is modeled due to limited computation constraints and simplification of the simulation.
+ *  Currently, the spread can be controlled via weights, that can increase or decrease the amount of viral load the recipient receive from an infected host.
+ *  There are weights for the distance between hosts, the vaccination status of the infected and the vaccination status of the recipient.
+ *  Always when a recipient reaches a fixed amount of viral load, there is a probability an infection may occur.
+ *  We chose a gemoetric distribution in order to model the randomness of an infection, some people might be infected after a small dose of viral load and others may get away with longer contact times to an infected.
+ *
+ *  Sources for viral laod differences due to vaccination status:
+ *
+ *  "Since viral load is linked to transmission, single-dose mRNA SARS-CoV-2 vaccination may help control outbreaks."
+ *  https://academic.oup.com/cid/article/73/6/e1365/6188727
+ *
+ *  "By analysing viral loads of over 16,000 infections during the current, Delta-variant-dominated pandemic wave in Israel, we found that BTIs in recently fully vaccinated individuals have lower viral loads than infections in unvaccinated individuals.
+ *   However, this effect starts to decline 2 months after vaccination and ultimately vanishes 6 months or longer after vaccination.
+ *   Notably, we found that the effect of BNT162b2 on reducing BTI viral loads is restored after a booster dose."
+ *  https://www.nature.com/articles/s41591-021-01575-4
+ *
+ *
+ *  Assumption for the recipient:
+ *  A vaccination should have a positive effect on risk reduction on a infection.
+ *  Therefore, one way to model this in our model is by decreasing the amount of viral load a vaccinated person receives and then fewer amount of infection events (e.g. after every x particles) will occur.
+ *
+ *  Sources for viral load differences dur to the distance between hosts:
+ *
+ *  Findings
+ *  Our search identified 172 observational studies across 16 countries and six continents, with no randomised controlled trials and 44 relevant comparative studies in health-care and non-health-care settings (n=25 697 patients).
+ *  Transmission of viruses was lower with physical distancing of 1 m or more, compared with a distance of less than 1 m (n=10 736, pooled adjusted odds ratio [aOR] 0·18, 95% CI 0·09 to 0·38; risk difference [RD] −10·2%, 95% CI −11·5 to −7·5;
+ *  moderate certainty); protection was increased as distance was lengthened (change in relative risk [RR] 2·02 per m; pinteraction=0·041; moderate certainty).
+ *  https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)31142-9/fulltext
+ *
+ *  Source for difference in location:
+ *  Following source compares different settings (e.g. classroom, office, choir practice) and the party setting with singing is very likely to be more infectious.
+ *  https://www.mdpi.com/1660-4601/17/21/8114/htm
+ *
+ *  ==> Therefore, the main stage and other party areas are modeled as more infectious, the shisha bar has direct contact and is also classsified as a more risky area. The infection risk is reduced for the remaining outdoor areas.
+ *
+ *  Source for probability at an infection event:
+ *  https://www.mdpi.com/1660-4601/17/21/8114/htm
+ *
+ *  ==> Baseline probability for infection of 0.0022 mentioned in the paper for one virus copy. We adjusted this value to our simulation and let a infection event occur after every 1000 particles received.
+ *      Depending on the infection risk, values between 0.01 and 0.001 seems to produce believable results.
+ */
 public class InfectionReport
         extends Report
         implements MessageListener {
@@ -29,7 +70,7 @@ public class InfectionReport
     public static final String FACTOR_RECEIVER_S = "factor_receiver";
 
     private static final int INDEX_INDOOR = 0;
-    private static final int INDEX_MAIN_STAGE = 1;
+    private static final int INDEX_HIGH_RISK_PARTY_AREA = 1;
     private static final int INDEX_SHISHA_BAR = 2;
     private static final int INDEX_OUTDOOR = 3;
     private static final int INDEX_UNVACCINATED = 0;
@@ -66,12 +107,15 @@ public class InfectionReport
             new ExitState(),
     };
 
-    private static final MainStageState stateMainStage = new MainStageState();
+    private static final NodeState[] statesHighRiskPartyAreas = new NodeState[] {
+            new MainStageState(),
+            new MetalBunkerState(),
+            new TechnoBunkerState(),
+    };
+
     private static final ShishaBarState stateShishaBar = new ShishaBarState();
     private static final NodeState[] statesIndoor = new NodeState[] {
             new WardrobeState(),
-            new MetalBunkerState(),
-            new TechnoBunkerState(),
             new SideWCState(),
             new MainWCState(),
             new WardrobeBeforeLeavingState(),
@@ -186,8 +230,15 @@ public class InfectionReport
         // Apply sender side modifier
         // apply factor depending on sender vaccination status and location
         double factorSenderLocation = factorLocation[INDEX_INDOOR];
-        if(isInside(stateMainStage.getPolygon(), from.getLocation())){
-            factorSenderLocation = factorLocation[INDEX_MAIN_STAGE]; // check main stage
+        boolean isHighRiskArea = false;
+        for(NodeState node: statesHighRiskPartyAreas) {
+            if (isInside(node.getPolygon(), from.getLocation())) {
+                isHighRiskArea = true;
+                break;
+            }
+        }
+        if(isHighRiskArea){
+            factorSenderLocation = factorLocation[INDEX_HIGH_RISK_PARTY_AREA];
         }else if(isInside(stateShishaBar.getPolygon(), from.getLocation())){
             factorSenderLocation = factorLocation[INDEX_SHISHA_BAR]; // check shisha bar
         }else {
