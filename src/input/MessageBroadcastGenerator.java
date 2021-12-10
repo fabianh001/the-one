@@ -50,7 +50,6 @@ public class MessageBroadcastGenerator extends MessageEventGenerator {
             to = this.toHostRange[0] + (++nextToOffset);
         }
         // message size depends on host: vaccinated, wears mask, indoor/outdoor
-        // TODO: change to variable size
         msgSize = 1000;
         MessageBroadcastCreateEvent mce = new MessageBroadcastCreateEvent(from, this.toHostRange, getID(),
                 msgSize, responseSize, this.nextEventsTime);
