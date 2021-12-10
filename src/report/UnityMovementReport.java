@@ -4,9 +4,7 @@ import core.*;
 import movement.StatefulRwp;
 import movement.state.states.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 class NodeInformation {
     HashMap<String, Double> locations = new HashMap<>();
@@ -75,9 +73,14 @@ public class UnityMovementReport extends Report implements MovementListener {
 
     @Override
     public void done() {
-        //write summary
-        write("---- DONE ----");
-        //HashMap.SimpleEntry<Integer, InfectionData>
+        // write all labels into first row
+        Optional<String> optRow = Arrays.stream(states).map(NodeState::getStateName).reduce((a, b)->a + "\",\"" + b);
+        if(optRow.isPresent()){
+            String firstRow = "\"Node Address\",\"" + optRow.get() + "\"," + "Other" + "," + "\"Total Time\"";
+            write(firstRow);
+        }
+
+        //create line of all times
         for (Map.Entry<Integer, NodeInformation> entry : nodeMap.entrySet()) {
             StringBuilder locations = new StringBuilder();
             int total = 0;
@@ -87,10 +90,21 @@ public class UnityMovementReport extends Report implements MovementListener {
                     value = 0.0;
                 }
                 total += value;
-                locations.append(String.format("%1$25s%2$-15s", state.getStateName() + ":", value + ","));
+                locations.append(",");
+                locations.append(value);
             }
-            locations.append(String.format("%1$10s%2$-10d", "Total Time: ", total));
-            write(String.format("%1$-10s%2$-5s", "Node " + entry.getKey() + ":", locations.toString()));
+            //Add "Other" time
+            locations.append(",");
+            Double otherValue = entry.getValue().locations.get("Other");
+            if (otherValue == null) {
+                otherValue = 0.0;
+            }
+            total += otherValue;
+            locations.append(otherValue);
+            //Add total time
+            locations.append(",");
+            locations.append(total);
+            write("\"Node " + entry.getKey() + "\"" + locations.toString());
         }
 
         super.done();
