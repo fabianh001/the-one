@@ -7,7 +7,7 @@ import java.util.List;
 
 public abstract class NodeState {
     protected double random;
-    private Class[] allStates = getAllStates();
+    Class[] allStates = getAllStates();
 
     public abstract String getStateName();
     protected abstract Integer[] getIntervals();
