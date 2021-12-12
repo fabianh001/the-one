@@ -2,7 +2,7 @@ package report;
 
 import core.DTNHost;
 import core.UpdateListener;
-import movement.StatefulRwp;
+import movement.UnityGuestMovementModel;
 import movement.state.states.*;
 
 import java.util.Arrays;
@@ -65,7 +65,7 @@ public class HostLocationReport
         for (DTNHost host : hosts) {
 
             try {
-                StatefulRwp movModel = (StatefulRwp) host.movement;
+                UnityGuestMovementModel movModel = (UnityGuestMovementModel) host.movement;
                 String labelLocation = movModel.lastState.getStateName();
                 amount[stateIndex.get(labelLocation)]++;
                 continue;

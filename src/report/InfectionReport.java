@@ -3,7 +3,7 @@ package report;
 import core.DTNHost;
 import core.Message;
 import core.MessageListener;
-import movement.StatefulRwp;
+import movement.UnityGuestMovementModel;
 import movement.state.states.*;
 
 import java.util.*;
@@ -203,9 +203,9 @@ public class InfectionReport
         String fromLabelLocation = "Other";
         String toLabelLocation = "Other";
         try {
-            StatefulRwp movModel = (StatefulRwp) from.movement;
+            UnityGuestMovementModel movModel = (UnityGuestMovementModel) from.movement;
             fromLabelLocation = movModel.lastState.getStateName();
-            movModel = (StatefulRwp) to.movement;
+            movModel = (UnityGuestMovementModel) to.movement;
             toLabelLocation = movModel.lastState.getStateName();
         } catch (Exception e) {
             // Do nothing

@@ -50,25 +50,25 @@ Group2.groupID = IU2
 Group2.nrofHosts = 5
 Group2.nrofInterfaces = 1
 Group2.interface1 = firstinterface
-Group2.movementModel = StatefulRwp
+Group2.movementModel = UnityGuestMovementModel
 
 Group3.groupID = IV3
 Group3.nrofHosts = 5
 Group3.nrofInterfaces = 1
 Group3.interface1 = firstinterface
-Group3.movementModel = StatefulRwp
+Group3.movementModel = UnityGuestMovementModel
 
 Group4.groupID = IB4
 Group4.nrofHosts = 5
 Group4.nrofInterfaces = 1
 Group4.interface1 = firstinterface
-Group4.movementModel = StatefulRwp
+Group4.movementModel = UnityGuestMovementModel
 
 Group5.groupID = NU5
 Group5.nrofHosts = 150
 Group5.nrofInterfaces = 1
 Group5.interface1 = firstinterface
-Group5.movementModel = StatefulRwp
+Group5.movementModel = UnityGuestMovementModel
 
 # Groups
 Scenario.nrofHostGroups = 5

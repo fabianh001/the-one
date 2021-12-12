@@ -1,7 +1,7 @@
 package report;
 
 import core.*;
-import movement.StatefulRwp;
+import movement.UnityGuestMovementModel;
 import movement.state.states.*;
 
 import java.util.*;
@@ -53,7 +53,7 @@ public class UnityMovementReport extends Report implements MovementListener {
         }
 
         try {
-            StatefulRwp movModel = (StatefulRwp) host.movement;
+            UnityGuestMovementModel movModel = (UnityGuestMovementModel) host.movement;
             String labelLocation = movModel.lastState.getStateName();
             currentNodeInfo.lastTimeStep = currentTime;
             currentNodeInfo.currentNodeState = labelLocation;

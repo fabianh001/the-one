@@ -16,7 +16,7 @@ import java.util.*;
  * @author teemuk
  */
 
-public class StatefulRwp
+public class UnityGuestMovementModel
         extends MovementModel {
 
     //==========================================================================//
@@ -155,7 +155,7 @@ public class StatefulRwp
 
     @Override
     public MovementModel replicate() {
-        return new StatefulRwp(this);
+        return new UnityGuestMovementModel(this);
     }
 
     private Coord randomCoord(List<Coord> polygon) {
@@ -215,12 +215,12 @@ public class StatefulRwp
     //==========================================================================//
     // Construction
     //==========================================================================//
-    public StatefulRwp(final Settings settings) {
+    public UnityGuestMovementModel(final Settings settings) {
         super(settings);
         this.currentState = new QueueState();
     }
 
-    public StatefulRwp(final StatefulRwp other) {
+    public UnityGuestMovementModel(final UnityGuestMovementModel other) {
         super(other);
 
         // Pick a random state every time we replicate rather than copying!
