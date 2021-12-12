@@ -23,6 +23,11 @@ public class MetalBunkerState extends NodeState {
     }
 
     @Override
+    public double minTimeInThisState() {
+        return 1200;
+    }
+
+    @Override
     public boolean shouldDoRwpInPolygon() {
         return true;
     }

@@ -24,6 +24,11 @@ public class ExitState extends NodeState {
     }
 
     @Override
+    public double minTimeInThisState() {
+        return 20;
+    }
+
+    @Override
     protected Double[] getIntervals() {
         return new Double[] {
                 0.0,

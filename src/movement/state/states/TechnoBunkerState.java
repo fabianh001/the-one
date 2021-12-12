@@ -23,6 +23,11 @@ public class TechnoBunkerState extends NodeState {
     }
 
     @Override
+    public double minTimeInThisState() {
+        return 600;
+    }
+
+    @Override
     public boolean shouldDoRwpInPolygon() {
         return true;
     }

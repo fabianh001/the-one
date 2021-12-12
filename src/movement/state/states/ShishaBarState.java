@@ -24,7 +24,7 @@ public class ShishaBarState extends NodeState {
 
     @Override
     public double minTimeInThisState() {
-        return 900;
+        return 1500;
     }
 
     @Override

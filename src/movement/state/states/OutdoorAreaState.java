@@ -23,6 +23,11 @@ public class OutdoorAreaState extends NodeState {
     }
 
     @Override
+    public double minTimeInThisState() {
+        return 900;
+    }
+
+    @Override
     protected Double[] getIntervals() {
         return new Double[] {
                 0.0,
