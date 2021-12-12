@@ -8,12 +8,10 @@ import movement.state.states.*;
 import java.util.*;
 
 /**
- * Example of a state-machine driven node mobility. Each node has two states
- * LEFT and RIGHT that influence the picking of the next waypoint. Nodes
- * transition between the states with some probability defined by the state
- * transition diagram.
+ * Movement model simulating the movememnt of TUM Unity 2021 guests.
+ * A combination of statefull movement, time-variant movement, polygon movement.
  *
- * @author teemuk
+ * @author Sven Andabaka
  */
 
 public class UnityGuestMovementModel
