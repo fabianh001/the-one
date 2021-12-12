@@ -347,7 +347,7 @@ public class StatefulRwp
         startTimeOfCurrentState = curTime;
 
         // needed for first state
-        if (state instanceof QueueState) {
+        if (state instanceof QueueState || state instanceof WardrobeBeforeLeavingState || state instanceof ExitState) {
             return state.getNextState();
         }
 
@@ -357,20 +357,20 @@ public class StatefulRwp
             return newState;
         }
 
-        //21:00 - 22:00 & 3:30 - 4:00 People get more snacks
-        if ((curTime < 5400 || curTime > 25200) && random < 0.1) {
+        //21:00 - 22:00 & 3:00 - 3:30 People get more snacks
+        if ((curTime < 5400 || (curTime > 23400 && curTime < 25200)) && random < 0.1) {
             NodeState newState = new PizzaBarState();
             return newState;
         }
 
         //01:00 - 01:30 last regular u-bahn so more people are leaving
-        if (curTime > 16200 && curTime < 18000 && random < 0.15) {
+        if (curTime > 16200 && curTime < 18000 && random < 0.25) {
             NodeState newState = new WardrobeBeforeLeavingState();
             return newState;
         }
 
-        //4:15 party closes (at 4:30) so people leave with very high probability
-        if (curTime > 27900 && random < 0.9) {
+        //3:30 party closes (at 4:30) so people leave with very high probability
+        if (curTime > 25200 && random < 0.9) {
             NodeState newState = new WardrobeBeforeLeavingState();
             return newState;
         }

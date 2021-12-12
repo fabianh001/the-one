@@ -31,7 +31,7 @@ public class MainWCState extends NodeState {
                 61.4,
                 7.0,
                 4.0,
-                2.3,
+                2.0,
                 5.0,
                 15.0,
                 2.0,
@@ -40,7 +40,7 @@ public class MainWCState extends NodeState {
                 0.0,
                 0.0,
                 0.0,
-                0.2
+                0.5
         };
     }
 }
