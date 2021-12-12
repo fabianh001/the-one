@@ -23,24 +23,24 @@ public class ShotBarState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                0,
-                40,
-                16,
-                8,
-                5,
-                4,
-                5,
-                4,
-                4,
-                5,
-                2,
-                3,
-                1,
-                3
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                0.0,
+                48.0,
+                30.8,
+                4.0,
+                4.0,
+                1.0,
+                1.0,
+                3.0,
+                0.1,
+                3.0,
+                2.0,
+                3.0,
+                0.0,
+                0.1
         };
     }
 }

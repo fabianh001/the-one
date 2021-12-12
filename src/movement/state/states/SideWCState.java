@@ -23,24 +23,24 @@ public class SideWCState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                0,
-                35,
-                13,
-                3,
-                10,
-                15,
-                5,
-                5,
-                3,
-                5,
-                1,
-                1,
-                1,
-                3
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                0.0,
+                55.0,
+                5.0,
+                1.8,
+                4.0,
+                15.0,
+                10.0,
+                4.0,
+                0.1,
+                5.0,
+                0.0,
+                0.0,
+                0.0,
+                0.1
         };
     }
 }

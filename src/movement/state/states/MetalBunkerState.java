@@ -28,24 +28,24 @@ public class MetalBunkerState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                0,
-                20,
-                20,
-                20,
-                5,
-                2,
-                10,
-                5,
-                5,
-                5,
-                1,
-                3,
-                1,
-                3
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                0.0,
+                20.0,
+                10.0,
+                50.0,
+                3.0,
+                2.0,
+                8.0,
+                1.7,
+                0.2,
+                1.0,
+                1.0,
+                3.0,
+                0.0,
+                0.1
         };
     }
 }

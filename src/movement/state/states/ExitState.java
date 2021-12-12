@@ -24,24 +24,24 @@ public class ExitState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                100,
-                0
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                100.0,
+                0.0
         };
     }
 

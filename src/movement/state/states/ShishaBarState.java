@@ -28,24 +28,24 @@ public class ShishaBarState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                0,
-                20,
-                50,
-                2,
-                2,
-                2,
-                5,
-                5,
-                1,
-                5,
-                1,
-                3,
-                1,
-                3
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                0.0,
+                19.9,
+                25.0,
+                5.0,
+                1.0,
+                2.0,
+                2.0,
+                2.0,
+                35.0,
+                5.0,
+                1.0,
+                2.0,
+                0.0,
+                0.1
         };
     }
 }

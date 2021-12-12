@@ -30,24 +30,24 @@ public class EntryState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                90,
-                2,
-                2,
-                0,
-                0,
-                1,
-                2,
-                0,
-                1,
-                1,
-                0,
-                1,
-                0,
-                0
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                90.0,
+                2.5,
+                1.0,
+                0.5,
+                0.5,
+                0.5,
+                2.0,
+                0.5,
+                0.5,
+                1.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0
         };
     }
 }

@@ -23,24 +23,24 @@ public class PizzaBarState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                0,
-                26,
-                30,
-                5,
-                5,
-                5,
-                8,
-                5,
-                3,
-                5,
-                1,
-                3,
-                1,
-                3
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                0.0,
+                30.8,
+                32.0,
+                7.0,
+                3.0,
+                3.0,
+                8.0,
+                5.0,
+                0.3,
+                7.0,
+                2.8,
+                1.0,
+                0.0,
+                0.1
         };
     }
 }

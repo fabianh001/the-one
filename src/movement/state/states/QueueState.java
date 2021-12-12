@@ -24,24 +24,29 @@ public class QueueState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                50,
-                50,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0
+    public double minTimeInThisState() {
+        return 600;
+    }
+
+    @Override
+    protected Double[] getIntervals() {
+        return new Double[] {
+                66.0,
+                34.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
         };
     }
 }

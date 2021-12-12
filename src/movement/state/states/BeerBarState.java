@@ -23,24 +23,24 @@ public class BeerBarState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                0,
-                40,
-                11,
-                10,
-                8,
-                4,
-                5,
-                4,
-                4,
-                5,
-                2,
-                3,
-                1,
-                3
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                0.0,
+                76.8,
+                7.0,
+                4.0,
+                4.0,
+                1.0,
+                2.0,
+                1.0,
+                0.1,
+                1.0,
+                1.0,
+                2.0,
+                0.0,
+                0.1
         };
     }
 }

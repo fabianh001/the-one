@@ -23,24 +23,24 @@ public class MainWCState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                0,
-                38,
-                12,
-                7,
-                2,
-                5,
-                15,
-                5,
-                3,
-                5,
-                1,
-                1,
-                2,
-                4
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                0.0,
+                61.4,
+                7.0,
+                4.0,
+                2.3,
+                5.0,
+                15.0,
+                2.0,
+                0.1,
+                3.0,
+                0.0,
+                0.0,
+                0.0,
+                0.2
         };
     }
 }

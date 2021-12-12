@@ -10,7 +10,7 @@ public abstract class NodeState {
     Class[] allStates = getAllStates();
 
     public abstract String getStateName();
-    protected abstract Integer[] getIntervals();
+    protected abstract Double[] getIntervals();
 
     public boolean shouldDoRwpInPolygon() {
         return false;
@@ -25,9 +25,9 @@ public abstract class NodeState {
 
     public NodeState getNextState() {
         random = Math.random();
-        Integer[] intervals = getIntervals();
-        int lower = 0;
-        int upper = 0;
+        Double[] intervals = getIntervals();
+        double lower = 0.0;
+        double upper = 0.0;
         for (int i = 0; i < allStates.length; i++) {
             upper += intervals[i];
             if (isBetween(lower, upper)) {
@@ -64,7 +64,7 @@ public abstract class NodeState {
                 WardrobeBeforeLeavingState.class
         };
     }
-    private boolean isBetween(int lower, int upper) {
+    private boolean isBetween(double lower, double upper) {
         double lowerDouble = lower / 100.0;
         double upperDouble = upper / 100.0;
         return lowerDouble <= random && random < upperDouble;

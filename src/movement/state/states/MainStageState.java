@@ -34,24 +34,24 @@ public class MainStageState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                0,
-                30,
-                20,
-                5,
-                8,
-                10,
-                12,
-                2,
-                2,
-                3,
-                2,
-                2,
-                1,
-                3,
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                0.0,
+                73.0,
+                8.0,
+                3.0,
+                4.0,
+                3.0,
+                4.0,
+                1.5,
+                0.1,
+                0.3,
+                1.0,
+                2.0,
+                0.0,
+                0.1,
         };
     }
 }

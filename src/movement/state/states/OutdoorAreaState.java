@@ -23,24 +23,24 @@ public class OutdoorAreaState extends NodeState {
     }
 
     @Override
-    protected Integer[] getIntervals() {
-        return new Integer[] {
-                0,
-                0,
-                0,
-                20,
-                22,
-                5,
-                8,
-                8,
-                10,
-                5,
-                5,
-                8,
-                3,
-                2,
-                1,
-                3
+    protected Double[] getIntervals() {
+        return new Double[] {
+                0.0,
+                0.0,
+                0.0,
+                20.6,
+                42.0,
+                3.0,
+                5.0,
+                3.0,
+                5.0,
+                8.0,
+                0.3,
+                8.0,
+                2.0,
+                3.0,
+                0.0,
+                0.1
         };
     }
 }
