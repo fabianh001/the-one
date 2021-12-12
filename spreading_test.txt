@@ -53,19 +53,19 @@ Group2.interface1 = firstinterface
 Group2.movementModel = StatefulRwp
 
 Group3.groupID = IV3
-Group3.nrofHosts = 0
+Group3.nrofHosts = 5
 Group3.nrofInterfaces = 1
 Group3.interface1 = firstinterface
 Group3.movementModel = StatefulRwp
 
 Group4.groupID = IB4
-Group4.nrofHosts = 0
+Group4.nrofHosts = 5
 Group4.nrofInterfaces = 1
 Group4.interface1 = firstinterface
 Group4.movementModel = StatefulRwp
 
 Group5.groupID = NU5
-Group5.nrofHosts = 95
+Group5.nrofHosts = 150
 Group5.nrofInterfaces = 1
 Group5.interface1 = firstinterface
 Group5.movementModel = StatefulRwp
@@ -106,7 +106,7 @@ MovementModel.worldSize = 4500, 3400
 MovementModel.warmup = 1000
 
 # how many reports to load
-Report.nrofReports = 2
+Report.nrofReports = 3
 # length of the warm up period (simulated seconds)
 Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
@@ -126,6 +126,7 @@ Report.factor_sender = 1.0, 0.9, 0.8
 Report.factor_receiver = 1.0, 0.8, 0.7
 
 Report.report2 = UnityMovementReport
+Report.report3 = HostLocationReport
 
 ## Optimization settings -- these affect the speed of the simulation
 ## see World class for details.

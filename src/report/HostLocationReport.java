@@ -3,9 +3,11 @@ package report;
 import core.Coord;
 import core.DTNHost;
 import core.UpdateListener;
+import movement.StatefulRwp;
 import movement.state.states.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,8 @@ public class HostLocationReport
             new WardrobeBeforeLeavingState()
     };
 
+    private HashMap<String, Integer> stateIndex = new HashMap<>();
+
     public HostLocationReport(){
         init();
     }
@@ -50,6 +54,9 @@ public class HostLocationReport
             write(firstRow);
         }
 
+        for(int i = 0; i < states.length; i++) {
+            stateIndex.put(states[i].getStateName(), i);
+        }
     }
 
     @Override
@@ -57,17 +64,18 @@ public class HostLocationReport
         // at each time step, record amount of nodes at each area
         int[] amount = new int[states.length + 1];
         for(DTNHost host: hosts){
-            boolean locationFound = false;
-            for(int i = 0; i < states.length; i++){
-                if(isInside(states[i].getPolygon(), host.getLocation())){
-                    amount[i]++;
-                    locationFound = true;
-                    break;
-                }
+
+            try {
+                StatefulRwp movModel = (StatefulRwp) host.movement;
+                String labelLocation = movModel.lastState.getStateName();
+                amount[stateIndex.get(labelLocation)]++;
+                continue;
+            } catch (Exception e) {
+                // Do nothing
             }
-            if(!locationFound){
-                amount[amount.length - 1]++; // Count host to "Other" tag
-            }
+
+            //Other
+            amount[amount.length - 1]++;
         }
         StringBuilder builder = new StringBuilder();
         builder.append(getSimTime());
