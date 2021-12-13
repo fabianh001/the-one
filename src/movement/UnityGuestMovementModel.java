@@ -8,15 +8,13 @@ import movement.state.states.*;
 import java.util.*;
 
 /**
- * Example of a state-machine driven node mobility. Each node has two states
- * LEFT and RIGHT that influence the picking of the next waypoint. Nodes
- * transition between the states with some probability defined by the state
- * transition diagram.
+ * Movement model simulating the movememnt of TUM Unity 2021 guests.
+ * A combination of statefull movement, time-variant movement, polygon movement.
  *
- * @author teemuk
+ * @author Sven Andabaka
  */
 
-public class StatefulRwp
+public class UnityGuestMovementModel
         extends MovementModel {
 
     //==========================================================================//
@@ -155,7 +153,7 @@ public class StatefulRwp
 
     @Override
     public MovementModel replicate() {
-        return new StatefulRwp(this);
+        return new UnityGuestMovementModel(this);
     }
 
     private Coord randomCoord(List<Coord> polygon) {
@@ -215,12 +213,12 @@ public class StatefulRwp
     //==========================================================================//
     // Construction
     //==========================================================================//
-    public StatefulRwp(final Settings settings) {
+    public UnityGuestMovementModel(final Settings settings) {
         super(settings);
         this.currentState = new QueueState();
     }
 
-    public StatefulRwp(final StatefulRwp other) {
+    public UnityGuestMovementModel(final UnityGuestMovementModel other) {
         super(other);
 
         // Pick a random state every time we replicate rather than copying!
@@ -347,7 +345,7 @@ public class StatefulRwp
         startTimeOfCurrentState = curTime;
 
         // needed for first state
-        if (state instanceof QueueState) {
+        if (state instanceof QueueState || state instanceof WardrobeBeforeLeavingState || state instanceof ExitState) {
             return state.getNextState();
         }
 
@@ -357,20 +355,20 @@ public class StatefulRwp
             return newState;
         }
 
-        //21:00 - 22:00 & 3:30 - 4:00 People get more snacks
-        if ((curTime < 5400 || curTime > 25200) && random < 0.1) {
+        //21:00 - 22:00 & 3:00 - 3:30 People get more snacks
+        if ((curTime < 5400 || (curTime > 23400 && curTime < 25200)) && random < 0.1) {
             NodeState newState = new PizzaBarState();
             return newState;
         }
 
         //01:00 - 01:30 last regular u-bahn so more people are leaving
-        if (curTime > 16200 && curTime < 18000 && random < 0.15) {
+        if (curTime > 16200 && curTime < 18000 && random < 0.25) {
             NodeState newState = new WardrobeBeforeLeavingState();
             return newState;
         }
 
-        //4:15 party closes (at 4:30) so people leave with very high probability
-        if (curTime > 27900 && random < 0.9) {
+        //3:30 party closes (at 4:30) so people leave with very high probability
+        if (curTime > 25200 && random < 0.9) {
             NodeState newState = new WardrobeBeforeLeavingState();
             return newState;
         }
