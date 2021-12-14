@@ -63,7 +63,10 @@ public class InfectionReport
     // data collection
     private int[] infectedHosts; // counts for each vaccination group the amount of people getting infected
     private int[] spreaderHosts; // counts for each vaccination group the amount of people spreading the virus
-
+    private double simulationTime = 0;
+    private ArrayList<Integer> listInfectionWithinTimePeriod;
+    private final double timePeriod = 600;
+    private int currentIterationCounter = 0;
     // constants
 
     public static final String FACTOR_DISTANCE_S = "factor_distance";
@@ -83,6 +86,7 @@ public class InfectionReport
     // constants
     private double prob;
     private static final boolean showDebugOutput = false;
+
 
     private static final NodeState[] states = new NodeState[]{
             new QueueState(),
@@ -140,6 +144,9 @@ public class InfectionReport
         // initialize data collection
         spreaderHosts = new int[3];
         infectedHosts = new int[3];
+        listInfectionWithinTimePeriod = new ArrayList<>();
+        simulationTime = 0.0;
+
 
         // initialize parameter
         double[] factorDistancesDefault = new double[] {1.0, 1.0, 1.0, 0.2, 0.001};
@@ -349,6 +356,16 @@ public class InfectionReport
             }
 
             write(getSimTime() + ", " + from.getAddress() + ","+ toAddr + ","  + labelLocation + "," + to.isMovementActive());
+
+            // update time interval counter
+            while(simulationTime + timePeriod < getSimTime()){
+                // write one entry into list
+                listInfectionWithinTimePeriod.add(currentIterationCounter);
+                simulationTime = simulationTime + timePeriod;
+                currentIterationCounter = 0;
+            }
+            // increment counter by one
+            currentIterationCounter++;
         }
     }
 
@@ -369,6 +386,23 @@ public class InfectionReport
         }
         write(line);
         write(builder.toString());
+        write("-------");
+        // write last entries in list
+        while(simulationTime + timePeriod < getSimTime()){
+            // write one entry into list
+            listInfectionWithinTimePeriod.add(currentIterationCounter);
+            simulationTime = simulationTime + timePeriod;
+            currentIterationCounter = 0;
+        }
+        listInfectionWithinTimePeriod.add(currentIterationCounter); // add last valid entry to list
+        // write out entries from list
+        builder = new StringBuilder();
+        for(int entry: listInfectionWithinTimePeriod){
+            builder.append(entry);
+            builder.append(",");
+        }
+        write(builder.toString());
+
         write("-------");
         //HashMap.SimpleEntry<Integer, InfectionData>
         for(Map.Entry<Integer, InfectionData> entry:infectionTracker.entrySet()){
