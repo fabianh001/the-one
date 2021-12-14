@@ -184,6 +184,9 @@ public class InfectionReport
             factorReceiver = new double[]{1.0, 0.9, 0.8};
         }
 
+        // log host prefixes
+
+
     }
 
     @Override
