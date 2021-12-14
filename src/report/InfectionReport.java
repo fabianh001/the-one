@@ -59,7 +59,11 @@ public class InfectionReport
     private Random random;
     private double[] factorDistances;
     private double[] distances;
-    public double[] factorLocation, factorSender, factorReceiver;
+    private double[] factorLocation, factorSender, factorReceiver;
+    // data collection
+    private int[] infectedHosts; // counts for each vaccination group the amount of people getting infected
+    private int[] spreaderHosts; // counts for each vaccination group the amount of people spreading the virus
+
     // constants
 
     public static final String FACTOR_DISTANCE_S = "factor_distance";
@@ -133,6 +137,11 @@ public class InfectionReport
         super.init();
         random = new Random();
         infectionTracker = new HashMap<>();
+        // initialize data collection
+        spreaderHosts = new int[3];
+        infectedHosts = new int[3];
+
+        // initialize parameter
         double[] factorDistancesDefault = new double[] {1.0, 1.0, 1.0, 0.2, 0.001};
         double[] distancesDefault = new double[]{0.0, 0.5, 1.0, 1.5, 3.0};
         if(getSettings().contains(FACTOR_DISTANCE_S)) {
@@ -218,7 +227,7 @@ public class InfectionReport
         if(!to.isMovementActive()) return;
         //if(m.getFrom().getAddress() == to.getAddress()) return;  // message travelled in a loop
         // people in the queue can't get infected
-        if (toLabelLocation == new QueueState().getStateName()) return;
+        if (toLabelLocation.equals(new QueueState().getStateName())) return;
         int toAddr = to.getAddress();
 
 
@@ -244,18 +253,18 @@ public class InfectionReport
         double factorSenderLocation = factorLocation[INDEX_INDOOR];
         boolean isHighRiskArea = false;
         for(NodeState node: statesHighRiskPartyAreas) {
-            if (node.getStateName() == fromLabelLocation) {
+            if (node.getStateName().equals(fromLabelLocation)) {
                 isHighRiskArea = true;
                 break;
             }
         }
         if(isHighRiskArea){
             factorSenderLocation = factorLocation[INDEX_HIGH_RISK_PARTY_AREA];
-        }else if(stateShishaBar.getStateName() == fromLabelLocation){
+        }else if(stateShishaBar.getStateName().equals(fromLabelLocation)) {
             factorSenderLocation = factorLocation[INDEX_SHISHA_BAR]; // check shisha bar
         }else {
             for(NodeState node : statesOutside){
-                if(node.getStateName() == fromLabelLocation){
+                if(node.getStateName().equals(fromLabelLocation)) {
                     factorSenderLocation = factorLocation[INDEX_OUTDOOR];
                     break;
                 }
@@ -304,11 +313,38 @@ public class InfectionReport
         if(isFirstInfection){
             String labelLocation = "Other";
             for (NodeState state : states) {
-                if (state.getStateName() == toLabelLocation) {
+                if (state.getStateName().equals(toLabelLocation)) {
                     labelLocation = state.getStateName();
                     break;
                 }
             }
+            // data collection, sender and receiver
+            // look at second character for group prefix
+            switch (from.toString().charAt(1)){
+                case 'U':
+                    spreaderHosts[0]++;
+                    break;
+                case 'V':
+                    spreaderHosts[1]++;
+                    break;
+                case 'B':
+                    spreaderHosts[2]++;
+                default:
+                    throw new IllegalStateException("Second letter does not match any vaccination group prefix");
+            }
+            switch(to.toString().charAt(1)){
+                case 'U':
+                    infectedHosts[0]++;
+                    break;
+                case 'V':
+                    infectedHosts[1]++;
+                    break;
+                case 'B':
+                    infectedHosts[2]++;
+                default:
+                    throw new IllegalStateException("Second letter does not match any vaccination group prefix");
+            }
+
             write(getSimTime() + ", " + from.getAddress() + ","+ toAddr + ","  + labelLocation + "," + to.isMovementActive());
         }
     }
@@ -316,6 +352,20 @@ public class InfectionReport
     @Override
     public void done() {
         //write summary
+        write("-------");
+        // write aggregated information
+        StringBuilder builder = new StringBuilder();
+        String line = "Infection from Unvaccinated, Infection from Vaccination, Infection from Booster, Infected Unvaccinated, Infected Vaccinated, Infected Booster,";
+        for (int spreaderHost : spreaderHosts) {
+            builder.append(spreaderHost);
+            builder.append(",");
+        }
+        for (int infectedHost : infectedHosts) {
+            builder.append(infectedHost);
+            builder.append(",");
+        }
+        write(line);
+        write(builder.toString());
         write("-------");
         //HashMap.SimpleEntry<Integer, InfectionData>
         for(Map.Entry<Integer, InfectionData> entry:infectionTracker.entrySet()){
