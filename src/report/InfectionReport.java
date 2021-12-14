@@ -67,6 +67,8 @@ public class InfectionReport
     private ArrayList<Integer> listInfectionWithinTimePeriod;
     private final double timePeriod = 600;
     private int currentIterationCounter = 0;
+    private int[] infectedLocationCounter; // counter for infected locations
+
     // constants
 
     public static final String FACTOR_DISTANCE_S = "factor_distance";
@@ -146,7 +148,7 @@ public class InfectionReport
         infectedHosts = new int[3];
         listInfectionWithinTimePeriod = new ArrayList<>();
         simulationTime = 0.0;
-
+        infectedLocationCounter = new int[states.length + 1];
 
         // initialize parameter
         double[] factorDistancesDefault = new double[] {1.0, 1.0, 1.0, 0.2, 0.001};
@@ -321,11 +323,14 @@ public class InfectionReport
             infectionTracker.put(toAddr, data);
         }
         if(isFirstInfection){
-            String labelLocation = "Other";
-            for (NodeState state : states) {
-                if (state.getStateName().equals(toLabelLocation)) {
-                    labelLocation = state.getStateName();
-                    break;
+            if(toLabelLocation.equals("Other")){
+                infectedLocationCounter[states.length]++;
+            }else {
+                for (int i = 0; i < states.length; i++) {
+                    if (states[i].getStateName().equals(toLabelLocation)) {
+                        infectedLocationCounter[i]++;
+                        break;
+                    }
                 }
             }
             // data collection, sender and receiver
@@ -355,7 +360,7 @@ public class InfectionReport
                     throw new IllegalStateException("Second letter does not match any vaccination group prefix");
             }
 
-            write(getSimTime() + ", " + from.getAddress() + ","+ toAddr + ","  + labelLocation + "," + to.isMovementActive());
+            if(showDebugOutput) write(getSimTime() + ", " + from.getAddress() + ","+ toAddr + ","  + toLabelLocation + "," + to.isMovementActive());
 
             // update time interval counter
             while(simulationTime + timePeriod < getSimTime()){
@@ -401,8 +406,21 @@ public class InfectionReport
             builder.append(entry);
             builder.append(",");
         }
+        write("Infection time (aggregated in " + timePeriod + " second intervals)");
         write(builder.toString());
-
+        write("-------");
+        // write out infection area counter
+        builder = new StringBuilder();
+        for(NodeState state: states){
+            builder.append(state.getStateName());
+            builder.append(",");
+        }
+        builder.append("Other\n");
+        for(int value: infectedLocationCounter){
+            builder.append(value);
+            builder.append(",");
+        }
+        write(builder.toString());
         write("-------");
         //HashMap.SimpleEntry<Integer, InfectionData>
         for(Map.Entry<Integer, InfectionData> entry:infectionTracker.entrySet()){
