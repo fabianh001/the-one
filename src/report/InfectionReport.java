@@ -337,25 +337,27 @@ public class InfectionReport
             // look at second character for group prefix
             switch (from.toString().charAt(1)){
                 case 'U':
-                    spreaderHosts[0]++;
+                    spreaderHosts[INDEX_UNVACCINATED]++;
                     break;
                 case 'V':
-                    spreaderHosts[1]++;
+                    spreaderHosts[INDEX_VACCINATED]++;
                     break;
                 case 'B':
-                    spreaderHosts[2]++;
+                    spreaderHosts[INDEX_BOOSTER]++;
+                    break;
                 default:
                     throw new IllegalStateException("Second letter does not match any vaccination group prefix");
             }
             switch(to.toString().charAt(1)){
                 case 'U':
-                    infectedHosts[0]++;
+                    infectedHosts[INDEX_UNVACCINATED]++;
                     break;
                 case 'V':
-                    infectedHosts[1]++;
+                    infectedHosts[INDEX_VACCINATED]++;
                     break;
                 case 'B':
-                    infectedHosts[2]++;
+                    infectedHosts[INDEX_BOOSTER]++;
+                    break;
                 default:
                     throw new IllegalStateException("Second letter does not match any vaccination group prefix");
             }

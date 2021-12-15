@@ -1,0 +1,155 @@
+#
+# Simulation with only vaccinated, tested (unvaccinated) or recovered guests, Unity 2021, applying 3g model with 60 percent fully vaccinated ratio
+# --> Vaccinated and infected: 60% * 0.5% * 2000 = 0.003 * 2000 ==> 6 infected vaccinated hosts
+# 40% * 0.5% * 10% = 0.003 + 0,0002 = 0,4 infected, unvaccinated hosts ==> 1 infected, unvaccinated host
+# assumption: ten percent of tested hosts with infections are not detected
+#2000 people, 0.0022, 2000 guests, 60% fully vaccinated, 0.5% infected, 10% of tested people have false negative test
+
+## Scenario settings
+Scenario.name = cluster_spreading
+Scenario.simulateConnections = true
+Scenario.updateInterval = 5
+# 20:30 - 05:00
+Scenario.endTime = 30600
+MovementModel.worldSize = 220,250
+
+firstinterface.type = InfectionSimpleBroadcastInterface
+# transmit speed of 2 Mbps = 500kBps
+firstinterface.transmitSpeed = 500k
+firstinterface.transmitRange = 3
+
+
+Scenario.nrofHostGroups = 2
+
+# common settings for all groups
+Group.router = CustomEpidemicRouter
+Group.bufferSize = 5M
+Group.waitTime = 0, 120
+#All nodes have the firstinterface inteface
+Group.nrofInterfaces = 1
+Group.interface1 = firstinterface
+# walking speeds
+Group.speed = 0.5, 1.5
+#Group.msgTtl = 1
+
+Group.nrofApplications = 0
+
+# receiver of broadcast messages, renders map, should not receive any messages, not involved in movement and spreading simulation
+Group1.groupID = 1
+Group1.nrofHosts = 1
+Group1.nrofInterfaces = 1
+Group1.interface1 = myInterface
+myInterface.type = SimpleBroadcastInterface
+myInterface.transmitRange = 0
+myInterface.transmitSpeed = 0
+Group1.movementModel = MapRouteMovement
+Group1.router = PassiveRouter
+Group1.routeFile = data/mi_magistrale_outline.wkt
+Group1.routeType = 1
+
+
+# first character defines host as I(nfected) or N(on-Infected)
+# second character denotes host as U(nvaccinated), V(accinated) or B(ooster)
+Group2.groupID = IU2
+Group2.nrofHosts = 1
+Group2.nrofInterfaces = 1
+Group2.interface1 = firstinterface
+Group2.movementModel = UnityGuestMovementModel
+
+Group3.groupID = IV3
+Group3.nrofHosts = 6
+Group3.nrofInterfaces = 1
+Group3.interface1 = firstinterface
+Group3.movementModel = UnityGuestMovementModel
+
+Group4.groupID = IB4
+Group4.nrofHosts = 0
+Group4.nrofInterfaces = 1
+Group4.interface1 = firstinterface
+Group4.movementModel = UnityGuestMovementModel
+
+Group5.groupID = NU5
+Group5.nrofHosts = 799
+Group5.nrofInterfaces = 1
+Group5.interface1 = firstinterface
+Group5.movementModel = UnityGuestMovementModel
+
+Group6.groupID = NV6
+Group6.nrofHosts = 1194
+Group6.nrofInterfaces = 1
+Group6.interface1 = firstinterface
+Group6.movementModel = UnityGuestMovementModel
+
+Group7.groupID = NB7
+Group7.nrofHosts = 0
+Group7.nrofInterfaces = 1
+Group7.interface1 = firstinterface
+Group7.movementModel = UnityGuestMovementModel
+
+# Groups
+Scenario.nrofHostGroups = 7
+
+
+
+
+
+## Message creation parameters
+# How many event generators
+Events.nrof = 1
+# Class of the first event generator
+Events1.class = MessageBurstGenerator
+# (following settings are specific for the MessageEventGenerator class)
+# Creation interval in seconds (one new message every 25 to 35 seconds)
+Events1.interval = 60,60
+# Message sizes (50kB - 150kB)
+Events1.size = 5000,5000
+# range of message source/destination addresses
+Events1.hosts = 1,7
+Events1.tohosts = 0,0
+# Message ID prefix
+Events1.prefix = M
+
+
+
+## Movement model settings
+# seed for movement models' pseudo random number generator (default = 0)
+MovementModel.rngSeed = 1
+# World's size for Movement Models without implicit size (width, height; meters)
+MovementModel.worldSize = 4500, 3400
+# How long time to move hosts in the world before real simulation
+MovementModel.warmup = 1000
+
+# how many reports to load
+Report.nrofReports = 3
+# length of the warm up period (simulated seconds)
+Report.warmup = 0
+# default directory of reports (can be overridden per Report with output setting)
+Report.reportDir = reportsUnity2021_3g/
+# Report classes to load
+Report.report1 = InfectionReport
+# Configuration of parameters for the infection report
+# for each (distance, factor) pair, one entry in factor_distance, distances, in ascending order
+Report.factor_distance = 1.0, 1.0, 1.0, 0.2, 0.001
+Report.distances = 0.0, 0.5, 1.0, 1.5, 3.0
+# infection rate between 0.0001 and 0.001 seems to produce believable results
+Report.infection_rate = 0.0022
+# four different factors: indoor, high risk party areas (indoor, main stage, metal bunker, techno bunker), shisha bar and outside
+Report.factor_location = 1.0, 5.0, 10.0, 0.5
+# three values each for sender and receiver: unvaccinated, vaccinated, booster
+Report.factor_sender = 1.0, 0.8, 0.7
+Report.factor_receiver = 1.0, 0.9, 0.8
+
+Report.report2 = UnityMovementReport
+Report.report3 = HostLocationReport
+
+## Optimization settings -- these affect the speed of the simulation
+## see World class for details.
+Optimization.connectionAlg = 2
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = true
+
+
+## Map based movement -movement model specific settings
+MapBasedMovement.nrofMapFiles = 1
+
+MapBasedMovement.mapFile1 = data/mi_magistrale_outline.wkt
