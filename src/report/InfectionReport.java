@@ -65,7 +65,7 @@ public class InfectionReport
     private int[] spreaderHosts; // counts for each vaccination group the amount of people spreading the virus
     private double simulationTime = 0;
     private ArrayList<Integer> listInfectionWithinTimePeriod;
-    private final double timePeriod = 600;
+    private final double timePeriod = 1800; // time period in seconds
     private int currentIterationCounter = 0;
     private int[] infectedLocationCounter; // counter for infected locations
 
