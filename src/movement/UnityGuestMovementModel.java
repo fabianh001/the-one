@@ -22,8 +22,8 @@ public class UnityGuestMovementModel
     //==========================================================================//
     private Coord lastWaypoint;
 
-    private NodeState currentState;
-    public NodeState lastState = new QueueState();
+    public NodeState currentState;
+    private NodeState lastState = new QueueState();
 
     private boolean isActive = true;
 
