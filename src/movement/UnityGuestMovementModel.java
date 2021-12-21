@@ -367,7 +367,7 @@ public class UnityGuestMovementModel
             return newState;
         }
 
-        //3:30 party closes (at 4:30) so people leave with very high probability
+        //3:30 (party closes at 4:30) so people leave with very high probability
         if (curTime > 25200 && random < 0.9) {
             NodeState newState = new WardrobeBeforeLeavingState();
             return newState;
