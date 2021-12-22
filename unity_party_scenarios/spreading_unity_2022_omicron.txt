@@ -137,7 +137,7 @@ Report.report1 = InfectionReport
 Report.factor_distance = 1.0, 1.0, 1.0, 0.2, 0.001
 Report.distances = 0.0, 0.5, 1.0, 1.5, 3.0
 # infection rate between 0.0001 and 0.001 seems to produce believable results
-Report.infection_rate = 0.01
+Report.infection_rate = 0.0044
 # four different factors: indoor, high risk party areas (indoor, main stage, metal bunker, techno bunker), shisha bar and outside
 Report.factor_location = 1.0, 5.0, 10.0, 0.5
 # three values each for sender and receiver: unvaccinated, vaccinated, booster
