@@ -1,6 +1,6 @@
 #
 # Simulation with only vaccinated or recovered guests, January Unity 2022, applying 2g plus model with 100 percent fully vaccinated guests, 80 percent have the booster vaccine.
-# The omnikron variant is more infectious by about a factor 5 (probability = 0.01 instead of 0.0022), and vaccinated people have a slightly higher chance for infection.
+# The omicron variant is more infectious by about a factor 5 (probability = 0.01 instead of 0.0022), and vaccinated people have a slightly higher chance for infection.
 #
 # Recovered guests are counted as vaccinated guests due to the (slightly) better protection compared to unvaccinated guests
 # --> 3 out of 4 vaccinated guests have booster vaccine ~ 80%
@@ -137,7 +137,7 @@ Report.report1 = InfectionReport
 Report.factor_distance = 1.0, 1.0, 1.0, 0.2, 0.001
 Report.distances = 0.0, 0.5, 1.0, 1.5, 3.0
 # infection rate between 0.0001 and 0.001 seems to produce believable results
-Report.infection_rate = 0.0022
+Report.infection_rate = 0.01
 # four different factors: indoor, high risk party areas (indoor, main stage, metal bunker, techno bunker), shisha bar and outside
 Report.factor_location = 1.0, 5.0, 10.0, 0.5
 # three values each for sender and receiver: unvaccinated, vaccinated, booster
