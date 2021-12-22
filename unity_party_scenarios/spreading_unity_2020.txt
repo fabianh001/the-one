@@ -134,8 +134,8 @@ Report.infection_rate = 0.0022
 # four different factors: indoor, high risk party areas (indoor, main stage, metal bunker, techno bunker), shisha bar and outside
 Report.factor_location = 1.0, 5.0, 10.0, 0.5
 # three values each for sender and receiver: unvaccinated, vaccinated, booster
-Report.factor_sender = 1.0, 0.8, 0.7
-Report.factor_receiver = 1.0, 0.9, 0.8
+Report.factor_sender = 2.0, 1.6, 1.4
+Report.factor_receiver = 1.2, 0.8, 0.2
 
 Report.report2 = UnityMovementReport
 Report.report3 = HostLocationReport
