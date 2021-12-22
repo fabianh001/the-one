@@ -1,4 +1,4 @@
-# The ONE - Unity Editiona
+# The ONE - Unity Edition
 
 The Opportunistic Network Environment simulator.
 
