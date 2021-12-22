@@ -8,7 +8,7 @@
 # Fully Vaccinated, tested and infected: 20% * 0.5% * 10% * 2000 = 0.0001 * 2000 ==> 0.2 ~ 1 infected vaccinated hosts
 # Booster Vaccinated, tested and infected: 80% * 0.5% * 10% * 2000 = 0.0004 * 2000 = 0.8 ~ 1 infected, booster hosts
 # assumption: ten percent of tested hosts with infections are not detected
-# 2000 people, 0.01, 2000 guests, 100% vaccinated, 80% booster, 0.5% infected, 10% of tested people have false negative test
+# 2000 people, 0.0044, 2000 guests, 100% vaccinated, 80% booster, 0.5% infected, 10% of tested people have false negative test
 
 ## Scenario settings
 Scenario.name = cluster_spreading
@@ -141,8 +141,8 @@ Report.infection_rate = 0.0044
 # four different factors: indoor, high risk party areas (indoor, main stage, metal bunker, techno bunker), shisha bar and outside
 Report.factor_location = 1.0, 5.0, 10.0, 0.5
 # three values each for sender and receiver: unvaccinated, vaccinated, booster
-Report.factor_sender = 1.0, 0.95, 0.7
-Report.factor_receiver = 1.0, 0.95, 0.8
+Report.factor_sender = 2.0, 1.6, 1.4
+Report.factor_receiver = 1.2, 0.8, 0.2
 
 Report.report2 = UnityMovementReport
 Report.report3 = HostLocationReport
