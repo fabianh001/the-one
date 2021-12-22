@@ -1,14 +1,14 @@
 #
-# Simulation with only vaccinated or recovered guests, (Dezember) Unity 2021, applying 2g plus model with 70 percent fully vaccinated guests, 10 percent have the booster vaccine.
-# The omnikron variant is more infectious (probability = 0.01 instead of 0.0022), and vaccinated people have a slightly higher chance for infection.
+# Simulation with only vaccinated or recovered guests, January Unity 2022, applying 2g plus model with 100 percent fully vaccinated guests, 80 percent have the booster vaccine.
+# The omnikron variant is more infectious by about a factor 5 (probability = 0.01 instead of 0.0022), and vaccinated people have a slightly higher chance for infection.
 #
 # Recovered guests are counted as vaccinated guests due to the (slightly) better protection compared to unvaccinated guests
-# --> 1 out of 7 vaccinated guests have booster vaccine ~ 15% (just an approximation for 1/7 ~ 14.3%)
-# --> Assume 15% percent of total guests with booster, 85% percent as fully vaccinated (or recovered)
-# Fully Vaccinated, tested and infected: 85% * 0.5% * 10% * 2000 = 0.0000425 * 2000 ==> 0.85 ~ 1 infected vaccinated hosts
-# Booster Vaccinated, tested and infected: 15% * 0.5% 10% * 2000 = 0.000075 = 0.15 ~ 1 infected, booster hosts
+# --> 3 out of 4 vaccinated guests have booster vaccine ~ 80%
+# --> Assume 80% percent of total guests with booster, 20% percent as fully vaccinated, but only with 2 shots (or recovered)
+# Fully Vaccinated, tested and infected: 20% * 0.5% * 10% * 2000 = 0.0001 * 2000 ==> 0.2 ~ 1 infected vaccinated hosts
+# Booster Vaccinated, tested and infected: 80% * 0.5% * 10% * 2000 = 0.0004 * 2000 = 0.8 ~ 1 infected, booster hosts
 # assumption: ten percent of tested hosts with infections are not detected
-#2000 people, 0.0022, 2000 guests, 70% vaccinated, 10% booster, 0.5% infected, 10% of tested people have false negative test
+# 2000 people, 0.01, 2000 guests, 100% vaccinated, 80% booster, 0.5% infected, 10% of tested people have false negative test
 
 ## Scenario settings
 Scenario.name = cluster_spreading
@@ -80,13 +80,13 @@ Group5.interface1 = firstinterface
 Group5.movementModel = UnityGuestMovementModel
 
 Group6.groupID = NV6
-Group6.nrofHosts = 1699
+Group6.nrofHosts = 399
 Group6.nrofInterfaces = 1
 Group6.interface1 = firstinterface
 Group6.movementModel = UnityGuestMovementModel
 
 Group7.groupID = NB7
-Group7.nrofHosts = 299
+Group7.nrofHosts = 1599
 Group7.nrofInterfaces = 1
 Group7.interface1 = firstinterface
 Group7.movementModel = UnityGuestMovementModel
