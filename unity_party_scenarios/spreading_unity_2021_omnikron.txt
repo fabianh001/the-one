@@ -129,7 +129,7 @@ Report.nrofReports = 3
 # length of the warm up period (simulated seconds)
 Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
-Report.reportDir = reportsUnity2021_2g_plus/
+Report.reportDir = reportsUnity2021_2g_plus_omnikron/
 # Report classes to load
 Report.report1 = InfectionReport
 # Configuration of parameters for the infection report
