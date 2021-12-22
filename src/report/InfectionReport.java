@@ -59,7 +59,16 @@ public class InfectionReport
     private Random random;
     private double[] factorDistances;
     private double[] distances;
-    public double[] factorLocation, factorSender, factorReceiver;
+    private double[] factorLocation, factorSender, factorReceiver;
+    // data collection
+    private int[] infectedHosts; // counts for each vaccination group the amount of people getting infected
+    private int[] spreaderHosts; // counts for each vaccination group the amount of people spreading the virus
+    private double simulationTime = 0;
+    private ArrayList<Integer> listInfectionWithinTimePeriod;
+    private final double timePeriod = 1800; // time period in seconds
+    private int currentIterationCounter = 0;
+    private int[] infectedLocationCounter; // counter for infected locations
+
     // constants
 
     public static final String FACTOR_DISTANCE_S = "factor_distance";
@@ -79,6 +88,7 @@ public class InfectionReport
     // constants
     private double prob;
     private static final boolean showDebugOutput = false;
+
 
     private static final NodeState[] states = new NodeState[]{
             new QueueState(),
@@ -133,6 +143,14 @@ public class InfectionReport
         super.init();
         random = new Random();
         infectionTracker = new HashMap<>();
+        // initialize data collection
+        spreaderHosts = new int[3];
+        infectedHosts = new int[3];
+        listInfectionWithinTimePeriod = new ArrayList<>();
+        simulationTime = 0.0;
+        infectedLocationCounter = new int[states.length + 1];
+
+        // initialize parameter
         double[] factorDistancesDefault = new double[] {1.0, 1.0, 1.0, 0.2, 0.001};
         double[] distancesDefault = new double[]{0.0, 0.5, 1.0, 1.5, 3.0};
         if(getSettings().contains(FACTOR_DISTANCE_S)) {
@@ -174,6 +192,9 @@ public class InfectionReport
         }else{
             factorReceiver = new double[]{1.0, 0.9, 0.8};
         }
+
+        // log host prefixes
+
 
     }
 
@@ -218,7 +239,7 @@ public class InfectionReport
         if(!to.isMovementActive()) return;
         //if(m.getFrom().getAddress() == to.getAddress()) return;  // message travelled in a loop
         // people in the queue can't get infected
-        if (toLabelLocation == new QueueState().getStateName()) return;
+        if (toLabelLocation.equals(new QueueState().getStateName())) return;
         int toAddr = to.getAddress();
 
 
@@ -244,18 +265,18 @@ public class InfectionReport
         double factorSenderLocation = factorLocation[INDEX_INDOOR];
         boolean isHighRiskArea = false;
         for(NodeState node: statesHighRiskPartyAreas) {
-            if (node.getStateName() == fromLabelLocation) {
+            if (node.getStateName().equals(fromLabelLocation)) {
                 isHighRiskArea = true;
                 break;
             }
         }
         if(isHighRiskArea){
             factorSenderLocation = factorLocation[INDEX_HIGH_RISK_PARTY_AREA];
-        }else if(stateShishaBar.getStateName() == fromLabelLocation){
+        }else if(stateShishaBar.getStateName().equals(fromLabelLocation)) {
             factorSenderLocation = factorLocation[INDEX_SHISHA_BAR]; // check shisha bar
         }else {
             for(NodeState node : statesOutside){
-                if(node.getStateName() == fromLabelLocation){
+                if(node.getStateName().equals(fromLabelLocation)) {
                     factorSenderLocation = factorLocation[INDEX_OUTDOOR];
                     break;
                 }
@@ -302,20 +323,106 @@ public class InfectionReport
             infectionTracker.put(toAddr, data);
         }
         if(isFirstInfection){
-            String labelLocation = "Other";
-            for (NodeState state : states) {
-                if (state.getStateName() == toLabelLocation) {
-                    labelLocation = state.getStateName();
-                    break;
+            if(toLabelLocation.equals("Other")){
+                infectedLocationCounter[states.length]++;
+            }else {
+                for (int i = 0; i < states.length; i++) {
+                    if (states[i].getStateName().equals(toLabelLocation)) {
+                        infectedLocationCounter[i]++;
+                        break;
+                    }
                 }
             }
-            write(getSimTime() + ", " + from.getAddress() + ","+ toAddr + ","  + labelLocation + "," + to.isMovementActive());
+            // data collection, sender and receiver
+            // look at second character for group prefix
+            switch (from.toString().charAt(1)){
+                case 'U':
+                    spreaderHosts[INDEX_UNVACCINATED]++;
+                    break;
+                case 'V':
+                    spreaderHosts[INDEX_VACCINATED]++;
+                    break;
+                case 'B':
+                    spreaderHosts[INDEX_BOOSTER]++;
+                    break;
+                default:
+                    throw new IllegalStateException("Second letter does not match any vaccination group prefix");
+            }
+            switch(to.toString().charAt(1)){
+                case 'U':
+                    infectedHosts[INDEX_UNVACCINATED]++;
+                    break;
+                case 'V':
+                    infectedHosts[INDEX_VACCINATED]++;
+                    break;
+                case 'B':
+                    infectedHosts[INDEX_BOOSTER]++;
+                    break;
+                default:
+                    throw new IllegalStateException("Second letter does not match any vaccination group prefix");
+            }
+
+            if(showDebugOutput) write(getSimTime() + ", " + from.getAddress() + ","+ toAddr + ","  + toLabelLocation + "," + to.isMovementActive());
+
+            // update time interval counter
+            while(simulationTime + timePeriod < getSimTime()){
+                // write one entry into list
+                listInfectionWithinTimePeriod.add(currentIterationCounter);
+                simulationTime = simulationTime + timePeriod;
+                currentIterationCounter = 0;
+            }
+            // increment counter by one
+            currentIterationCounter++;
         }
     }
 
     @Override
     public void done() {
         //write summary
+        write("-------");
+        // write aggregated information
+        StringBuilder builder = new StringBuilder();
+        String line = "Infection from Unvaccinated, Infection from Vaccination, Infection from Booster, Infected Unvaccinated, Infected Vaccinated, Infected Booster,";
+        for (int spreaderHost : spreaderHosts) {
+            builder.append(spreaderHost);
+            builder.append(",");
+        }
+        for (int infectedHost : infectedHosts) {
+            builder.append(infectedHost);
+            builder.append(",");
+        }
+        write(line);
+        write(builder.toString());
+        write("-------");
+        // write last entries in list
+        while(simulationTime + timePeriod < getSimTime()){
+            // write one entry into list
+            listInfectionWithinTimePeriod.add(currentIterationCounter);
+            simulationTime = simulationTime + timePeriod;
+            currentIterationCounter = 0;
+        }
+        listInfectionWithinTimePeriod.add(currentIterationCounter); // add last valid entry to list
+        // write out entries from list
+        builder = new StringBuilder();
+        for(int entry: listInfectionWithinTimePeriod){
+            builder.append(entry);
+            builder.append(",");
+        }
+        write("Infection time (aggregated in " + timePeriod + " second intervals)");
+        write(builder.toString());
+        write("-------");
+        // write out infection area counter
+        builder = new StringBuilder();
+        for(NodeState state: states){
+            builder.append(state.getStateName());
+            builder.append(",");
+        }
+        builder.append("Other\n");
+        for(int value: infectedLocationCounter){
+            builder.append(value);
+            builder.append(",");
+        }
+        write(builder.toString());
         write("-------");
         //HashMap.SimpleEntry<Integer, InfectionData>
         for(Map.Entry<Integer, InfectionData> entry:infectionTracker.entrySet()){
