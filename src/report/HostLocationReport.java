@@ -66,7 +66,7 @@ public class HostLocationReport
 
             try {
                 UnityGuestMovementModel movModel = (UnityGuestMovementModel) host.movement;
-                String labelLocation = movModel.lastState.getStateName();
+                String labelLocation = movModel.currentState.getStateName();
                 amount[stateIndex.get(labelLocation)]++;
                 continue;
             } catch (Exception e) {

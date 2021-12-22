@@ -192,10 +192,6 @@ public class InfectionReport
         }else{
             factorReceiver = new double[]{1.0, 0.9, 0.8};
         }
-
-        // log host prefixes
-
-
     }
 
     @Override
@@ -225,9 +221,9 @@ public class InfectionReport
         String toLabelLocation = "Other";
         try {
             UnityGuestMovementModel movModel = (UnityGuestMovementModel) from.movement;
-            fromLabelLocation = movModel.lastState.getStateName();
+            fromLabelLocation = movModel.currentState.getStateName();
             movModel = (UnityGuestMovementModel) to.movement;
-            toLabelLocation = movModel.lastState.getStateName();
+            toLabelLocation = movModel.currentState.getStateName();
         } catch (Exception e) {
             // Do nothing
         }

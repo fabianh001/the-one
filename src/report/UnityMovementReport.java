@@ -54,7 +54,7 @@ public class UnityMovementReport extends Report implements MovementListener {
 
         try {
             UnityGuestMovementModel movModel = (UnityGuestMovementModel) host.movement;
-            String labelLocation = movModel.lastState.getStateName();
+            String labelLocation = movModel.currentState.getStateName();
             currentNodeInfo.lastTimeStep = currentTime;
             currentNodeInfo.currentNodeState = labelLocation;
             return;
