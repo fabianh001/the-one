@@ -3,7 +3,7 @@
 # Recovered guests are counted as vaccinated guests due to the (slightly) better protection compared to unvaccinated guests
 # --> 1 out of 7 vaccinated guests have booster vaccine ~ 15% (just an approximation for 1/7 ~ 14.3%)
 # --> Assume 15% percent of total guests with booster, 85% percent as fully vaccinated (or recovered)
-# Fully Vaccinated and infected: 85% * 0.5% * 2000 = 0.000425 * 2000 ==> 8.5 ~ 9 infected vaccinated hosts
+# Fully Vaccinated and infected: 85% * 0.5% * 2000 = 0.000425 * 2000 ==> 8.5 ~ 8 infected vaccinated hosts
 # Booster Vaccinated and infected: 15% * 0.5% 2000 = 0.00075 = 1.5 ~ 2 infected, booster hosts
 # assumption: ten percent of tested hosts with infections are not detected
 #2000 people, 0.0022, 2000 guests, 70% vaccinated, 10% booster, 0.5% infected, 10% of tested people have false negative test
@@ -60,7 +60,7 @@ Group2.interface1 = firstinterface
 Group2.movementModel = UnityGuestMovementModel
 
 Group3.groupID = IV3
-Group3.nrofHosts = 9
+Group3.nrofHosts = 8
 Group3.nrofInterfaces = 1
 Group3.interface1 = firstinterface
 Group3.movementModel = UnityGuestMovementModel
@@ -78,7 +78,7 @@ Group5.interface1 = firstinterface
 Group5.movementModel = UnityGuestMovementModel
 
 Group6.groupID = NV6
-Group6.nrofHosts = 1691
+Group6.nrofHosts = 1692
 Group6.nrofInterfaces = 1
 Group6.interface1 = firstinterface
 Group6.movementModel = UnityGuestMovementModel
