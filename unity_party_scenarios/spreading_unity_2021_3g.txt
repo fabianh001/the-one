@@ -51,7 +51,7 @@ Group1.routeType = 1
 # first character defines host as I(nfected) or N(on-Infected)
 # second character denotes host as U(nvaccinated), V(accinated) or B(ooster)
 Group2.groupID = IU2
-Group2.nrofHosts = 1
+Group2.nrofHosts = 2
 Group2.nrofInterfaces = 1
 Group2.interface1 = firstinterface
 Group2.movementModel = UnityGuestMovementModel
